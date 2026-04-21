@@ -1,0 +1,81 @@
+# =============================================================================
+# NOTE: Helix does NOT support standalone linters. Linting must be handled
+#       through the Language Server Protocol (LSP) for each language.
+#       Formatters, however, can be configured independently.
+# =============================================================================
+
+#****************************
+#*** Fish Shell formatter ***
+#****************************
+[[language]]
+name = "fish"
+formatter = { command = "fish_indent" }
+auto-format = true
+
+#**********************
+#*** JSON formatter ***
+#**********************
+[[language]]
+name = "json"
+auto-format = true
+formatter = { command = "deno", args = ["fmt", "-", "--ext", "json"] }
+language-servers = ["json-lsp"]
+
+[language-server.json-lsp]
+command = "json-lsp"
+args = ["--stdio"]
+
+#****************
+#*** Markdown ***
+#****************
+[[language]]
+name = "markdown"
+language-servers = ["markdown-oxide"]
+formatter = { command = "deno", args = ["fmt", "-", "--ext", "md"] }
+soft-wrap.enable = false
+auto-format = true
+
+[language-server.markdown-oxide]
+command = "markdown-oxide"
+
+#*************************
+#*** Rust LSP + Debug ***
+#*************************
+[[language]]
+name = "rust"
+auto-format = true
+formatter = { command = "rustfmt" }
+
+[language-server.rust-analyzer.config]
+command = "check"
+
+[language-server.rust-analyzer.environment]
+# This is the block to set environment variables
+SQLX_OFFLINE = "true"
+
+# Definizione del server
+[language-server.taplo]
+command = "taplo"
+args = ["lsp", "stdio"]
+
+#**********************
+#*** Toml formatter ***
+#**********************
+[[language]]
+name = "toml"
+formatter = { command = "taplo", args = ["fmt", "-"] }
+auto-format = true
+language-servers = ["taplo"]
+
+#**********************
+#*** YAML/YML formatter ***
+#**********************
+[[language]]
+name = "yaml"
+auto-format = true
+formatter = { command = "deno", args = ["fmt", "-", "--ext", "yaml"] }
+language-servers = ["yaml-lsp"]
+
+[language-server.yaml-lsp]
+command = "yaml-lsp"
+args = ["--stdio"]

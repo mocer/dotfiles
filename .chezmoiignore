@@ -1,0 +1,39 @@
+{{- /* File .chezmoiignore cross-platform compatible */ -}}
+
+# --- All Systems ---
+**/*.tmp
+**/*.bak
+**/*.swp
+**/*.log
+.git/
+node_modules/
+README.md
+LICENSE
+
+# --- macOS ---
+{{ if eq .chezmoi.os "darwin" -}}
+**/.DS_Store
+**/.AppleDouble
+**/.LSOverride
+**/Icon?
+**/.Spotlight-V100
+**/.Trashes
+{{- end }}
+
+# --- Windows ---
+{{ if eq .chezmoi.os "windows" -}}
+**/desktop.ini
+**/Thumbs.db
+$RECYCLE.BIN/
+**/ehthumbs.db
+**/NTUSER.DAT*
+**/ntuser.ini
+{{- end }}
+
+# --- Linux ---
+{{ if eq .chezmoi.os "linux" -}}
+*~
+lost+found/
+**/.fuse_hidden*
+**/.directory
+{{- end }}

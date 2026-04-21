@@ -1,0 +1,19 @@
+[profiles.default]
+"user.name" = "Mocer Andari"
+"user.email" = "mocer.andari@gmail.com"
+"user.signingkey" = "~/.ssh/id_ed25519_developer.pub"
+
+[profiles.posteitaliane]
+"user.name" = "Antonio Mollo"
+"user.email" = "molloan4@posteitaliane.it"
+"user.signingkey" = "~/.ssh/id_ed25519_posteitaliane.pub"
+
+[[rules]]
+profile.name = "posteitaliane"
+host = "posteitaliane.ghe.com"
+
+[[rules]]
+profile.name = "default"
+
+# Adds entries to .git/info/exclude (not .gitignore).
+excludes = [".DS_Store", "*.icloud"]

@@ -1,0 +1,18 @@
+# This is Git's per-user configuration file.
+# This is also the fallback to ghr failures 
+[user]
+	name = Mocer Andari
+	email = mocer.andari@gmail.com
+	signingkey = ~/.ssh/id_ed25519_developer.pub
+
+# Force Git to use SSH instead of GPG for signing
+[gpg]
+	format = ssh
+
+# REQUIRED: Tell Git where your allowed_signers file is
+[gpg "ssh"]
+	allowedSignersFile = ~/.ssh/allowed_signers
+
+# Enable automatic signing for every commit
+[commit]
+	gpgsign = true
