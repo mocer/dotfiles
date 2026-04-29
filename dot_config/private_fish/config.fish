@@ -86,6 +86,7 @@ abbr cc "cargo check"
 abbr ccl "cargo clippy"
 abbr cf "cargo fmt"
 
+abbr cz chezmoi
 abbr cza "chezmoi apply"
 abbr czd "chezmoi diff"
 abbr czr "chezmoi re-add"
