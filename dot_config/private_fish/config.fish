@@ -1,16 +1,23 @@
 ### 1. PATH CONFIGURATION
 # In Fish, the last 'fish_add_path' command has the highest priority.
-# We stack them from lowest to highest importance.
+# We stack them from lowest to highest importance
+set -l potential_paths \
+    # System & legacy paths (Lowest priority)
+    /usr/local/bin \
+    /opt/local/bin \
+    # MISE, local and Cargo binaries(For tools installed via rustup)
+    $HOME/.local/bin \
+    $HOME/.cargo/bin \
+    # Mise shims (HIGHEST PRIORITY)
+    # This ensures that Mise tools (as taplo, deno, xh, ...) are found before 
+    $HOME/.local/share/mise/shims
 
-# System & legacy paths (Lowest priority)
-fish_add_path /usr/local/bin /opt/local/bin $HOME/.openshift/bin
-
-# MISE, local and Cargo binaries(For tools installed via rustup)
-fish_add_path $HOME/.local/bin $HOME/.cargo/bin
-
-# Mise shims (HIGHEST PRIORITY)
-# This ensures that Mise tools (as taplo, deno, xh, ...) are found before 
-fish_add_path $HOME/.local/share/mise/shims
+for p in $potential_paths
+    # Add only existing path
+    if test -d $p
+        fish_add_path -g $p
+    end
+end
 
 ### 2. ENVIRONMENT VARIABLES
 # Rustup and Cargo directory configuration
