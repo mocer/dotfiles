@@ -1,0 +1,54 @@
+#!/usr/bin/env bash
+
+# Maintain a stable user-level path to the Fish binary managed by mise.
+#
+# GUI applications such as Zed should use this link instead of:
+#
+# - the version-specific Aqua installation path, which changes after upgrades;
+# - the mise shim, which may expose mise initialization arguments in terminal
+#   titles because the shim starts Fish with additional `-C` commands.
+#
+# Run this script after installing or upgrading Fish through mise.
+
+set -euo pipefail
+
+link_path="${HOME}/.local/bin/fish"
+
+if ! command -v mise >/dev/null 2>&1; then
+    printf 'ERROR: mise is not available in PATH.\n' >&2
+    exit 1
+fi
+
+fish_path="$(mise which fish 2>/dev/null || true)"
+
+if [[ -z "${fish_path}" ]]; then
+    printf 'ERROR: Fish is not installed or active through mise.\n' >&2
+    printf 'Run: mise install aqua:fish-shell/fish-shell\n' >&2
+    exit 1
+fi
+
+if [[ ! -x "${fish_path}" ]]; then
+    printf 'ERROR: The Fish binary resolved by mise is not executable:\n' >&2
+    printf '  %s\n' "${fish_path}" >&2
+    exit 1
+fi
+
+mkdir -p "$(dirname "${link_path}")"
+
+# Replace only the symbolic link itself. The resolved Fish installation remains
+# managed exclusively by mise.
+ln -sfn "${fish_path}" "${link_path}"
+
+resolved_path="$(readlink "${link_path}")"
+
+if [[ "${resolved_path}" != "${fish_path}" ]]; then
+    printf 'ERROR: The Fish link does not point to the expected target.\n' >&2
+    printf 'Expected: %s\n' "${fish_path}" >&2
+    printf 'Actual:   %s\n' "${resolved_path}" >&2
+    exit 1
+fi
+
+printf 'Fish link updated successfully:\n'
+printf '  %s -> %s\n' "${link_path}" "${resolved_path}"
+
+"${link_path}" --version

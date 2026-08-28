@@ -1,0 +1,141 @@
+### 1. PATH CONFIGURATION
+
+# Manage PATH as a global Fish variable for the current shell process.
+# Using --path avoids persisting entries in the universal fish_user_paths
+# variable, keeping chezmoi as the source of truth for PATH configuration.
+#
+# --move ensures that an existing entry is moved to the requested position
+# instead of retaining an order inherited from an earlier shell session.
+#
+# Paths are listed from highest to lowest priority. fish_add_path ignores
+# directories that do not exist on the current machine.
+fish_add_path --global --move --path \
+    $HOME/.local/share/mise/shims \
+    $HOME/.local/bin \
+    $HOME/.cargo/bin \
+    $HOME/.openshift/bin \
+    /opt/local/bin \
+    /usr/local/bin
+
+
+### 2. ENVIRONMENT VARIABLES
+
+# Configure the directories used by rustup and Cargo.
+set -gx RUSTUP_HOME $HOME/.rustup
+set -gx CARGO_HOME $HOME/.cargo
+
+# Store Cargo build artifacts in a shared directory instead of maintaining
+# a separate target directory inside every Rust project.
+set -gx CARGO_TARGET_DIR $CARGO_HOME/target
+
+# Configure the local sccache storage directory and maximum cache capacity.
+#
+# rustc-wrapper is declared in ~/.cargo/config.toml. Cargo therefore expects
+# sccache to be available whenever it starts, including from GUI applications
+# and non-interactive processes.
+#
+# Mise shims are added to PATH above. A stable symlink under ~/.cargo/bin can
+# still be used if a GUI application starts without inheriting this Fish PATH:
+#
+#   ln -sf ~/.local/share/mise/shims/sccache ~/.cargo/bin/sccache
+set -gx SCCACHE_DIR $HOME/.cache/sccache
+set -gx SCCACHE_CACHE_SIZE "{{ .sccache_cache_size }}"
+
+# Define the root directory used by ghr to organize managed repositories.
+set -gx GHR_ROOT "{{ .ghr_root | replace "~" .chezmoi.homeDir }}"
+
+# Configure zoxide to use skim instead of fzf for interactive selection.
+set -gx _ZO_FZF_OPTS ""
+set -gx _ZOXIDE_FZF_CMD \
+    "sk --height 40% --layout=reverse --border rounded"
+
+# Render manual pages through bat with syntax highlighting.
+set -gx MANPAGER "sh -c 'col -bx | bat -l man -p'"
+
+# Apply the locale selected through shared or machine-specific chezmoi data.
+set -gx LANG "{{ .locale }}"
+set -gx LANGUAGE "{{ .locale }}"
+set -gx LC_ALL "{{ .locale }}"
+
+
+### 3. INTERACTIVE SHELL INITIALIZATION
+
+# Interactive tools, prompts, and shell integrations should not run in scripts
+# or non-interactive Fish processes.
+if status is-interactive
+    # Activate mise so tool versions and project environment variables are
+    # automatically updated when entering or leaving a project directory.
+    mise activate -q fish | source
+
+    # Initialize the interactive prompt, history search, and smart directory
+    # navigation after mise has made their managed binaries available.
+    starship init fish | source
+    atuin init fish | source
+    zoxide init fish | source
+
+    # Load the ghr shell extension used by commands such as `ghr cd`.
+    # Fish loads the generated command completions separately from:
+    # ~/.config/fish/completions/ghr.fish
+    if command -q ghr
+        ghr shell fish | source
+    end
+
+    # Display a short greeting only in interactive shells.
+    set fish_greeting "Hi Mocer, may the force be with you!"
+end
+
+
+### 4. PLATFORM-SPECIFIC INTEGRATIONS
+
+{{- if eq .chezmoi.os "darwin" }}
+
+# Load OrbStack shell integration only on macOS and only when it is installed.
+if test -f $HOME/.orbstack/shell/init2.fish
+    source $HOME/.orbstack/shell/init2.fish
+end
+{{- end }}
+
+
+if status is-interactive
+    ### 5. INTERACTIVE ALIASES
+    
+    # Replace common file listing commands with eza while preserving familiar names.
+    alias ls  "eza --icons --group-directories-first"
+    alias ll  "eza --icons --group-directories-first -l --git"
+    alias la  "eza --icons --group-directories-first -la --git"
+    alias lt  "eza --icons --tree --level=2"
+    alias llt "eza --icons --tree --level=2 -l --git"
+    
+    # Use bat as an interactive replacement for cat without automatic paging.
+    alias cat "bat --paging=never"
+    
+    
+    ### 6. ABBREVIATIONS
+    
+    # Cargo development workflow.
+    abbr cb  "cargo build"
+    abbr cbr "cargo build --release"
+    abbr ct  "cargo nextest run"
+    abbr cw  "cargo watch -x 'nextest run'"
+    abbr cc  "cargo check"
+    abbr ccl "cargo clippy"
+    abbr cf  "cargo fmt"
+    
+    # Chezmoi workflow.
+    abbr cza  "chezmoi apply"
+    abbr czd  "chezmoi diff"
+    abbr czr  "chezmoi re-add"
+    abbr czs  "chezmoi status"
+    abbr czcd "chezmoi cd"
+    abbr czad "chezmoi add"
+    
+    # Jujutsu workflow.
+    abbr jl  "jj log"
+    abbr jd  "jj describe -m"
+    abbr jn  "jj new"
+    abbr js  "jj squash"
+    abbr jgp "jj git push"
+    
+    # Search configuration files using the custom skim-based file selector.
+    abbr skfc "skf $HOME/.config"
+end

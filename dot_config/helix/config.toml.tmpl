@@ -3,7 +3,12 @@ theme = "dark_plus"
 [editor]
 true-color = true
 line-number = "relative"
-shell = ["/usr/local/bin/fish", "-c"]
+# Use the stable mise shim instead of a package-manager-specific Fish path.
+# The shim resolves the Fish version configured globally through mise.
+shell = [
+"{{ .chezmoi.homeDir }}/.local/bin/fish",
+"-c",
+]
 bufferline = "multiple"
 
 [editor.soft-wrap]

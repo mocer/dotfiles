@@ -1,0 +1,12 @@
+# Shared defaults used by chezmoi templates on every managed machine.
+
+# Default locale for shell sessions and user-facing command-line tools.
+locale = "it_IT.UTF-8"
+
+# Default maximum size of the local sccache cache.
+sccache_cache_size = "50G"
+
+# Default root directory used by ghr to organize managed repositories.
+# A machine-specific value may override this default through the local
+# chezmoi configuration (~/.config/chezmoi/chezmoi.toml).
+ghr_root = "~/Repos"
