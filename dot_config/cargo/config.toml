@@ -1,7 +1,0 @@
-[registries]
-registries.crates-io.protocol = "sparse"
-
-[build]
-jobs = 10                       #sysctl -n hw.logicalcpu
-rustc-wrapper = "sccache"
-target = "aarch64-apple-darwin" #rustc --version --verbose | grep host | cut -d' ' -f2

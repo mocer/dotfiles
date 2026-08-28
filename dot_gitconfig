@@ -16,3 +16,7 @@
 # Enable automatic signing for every commit
 [commit]
 	gpgsign = true
+
+# Global gitignore for machine and user-specific artifacts
+[core]
+	excludesFile = ~/.config/git/ignore

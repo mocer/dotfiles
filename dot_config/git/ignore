@@ -1,0 +1,82 @@
+### Operating system metadata
+
+# macOS Finder metadata.
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# macOS volume and filesystem metadata.
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+.AppleDB
+.AppleDesktop
+Network Trash Folder
+Temporary Items
+.apdisk
+*.icloud
+
+# Windows Explorer metadata.
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+[Dd]esktop.ini
+$RECYCLE.BIN/
+*.lnk
+
+
+### Editor and merge artifacts
+
+# Common editor backup files.
+*~
+*.swp
+*.swo
+
+# Git and merge-tool backup files.
+*.orig
+*.BACKUP.*
+*.BASE.*
+*.LOCAL.*
+*.REMOTE.*
+*_BACKUP_*.txt
+*_BASE_*.txt
+*_LOCAL_*.txt
+*_REMOTE_*.txt
+
+
+### Filesystem artifacts
+
+# Files created when a deleted file is still open.
+.fuse_hidden*
+.nfs*
+
+# Linux desktop and trash metadata.
+.directory
+.Trash-*
+
+
+### User-local development state
+
+# Local environment files may contain credentials.
+.env
+.env.local
+.env.*.local
+
+# Local mise overrides must not be committed.
+mise.local.toml
+mise.*.local.toml
+
+# Python virtual environments created locally.
+.venv/
+
+# Local test and analysis caches.
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.hypothesis/
