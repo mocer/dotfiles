@@ -13,7 +13,6 @@ fish_add_path --global --move --path \
     $HOME/.local/share/mise/shims \
     $HOME/.local/bin \
     $HOME/.cargo/bin \
-    $HOME/.openshift/bin \
     /opt/local/bin \
     /usr/local/bin
 
@@ -27,6 +26,11 @@ set -gx CARGO_HOME $HOME/.cargo
 # Store Cargo build artifacts in a shared directory instead of maintaining
 # a separate target directory inside every Rust project.
 set -gx CARGO_TARGET_DIR $CARGO_HOME/target
+
+# Runtime panic verbosity for every Rust binary started from the shell.
+# Kept in fish (not cargo [env]) so it also applies when running a binary
+# directly from target/ or a mise path, not only via `cargo run`.
+set -gx RUST_BACKTRACE 1
 
 # Configure the local sccache storage directory and maximum cache capacity.
 #
@@ -137,5 +141,6 @@ if status is-interactive
     abbr jgp "jj git push"
     
     # Search configuration files using the custom skim-based file selector.
-    abbr skfc "skf $HOME/.config"
+    abbr skdc "skh (chezmoi source-path)"
+    abbr skcc "skh $HOME/.config"
 end

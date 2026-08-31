@@ -1,3 +1,11 @@
+# Chezmoi profiles management
+{{ if not (has "poste" .profiles) -}}
+.config/mise/conf.d/poste.toml
+{{ end -}}
+{{ if not (has "mobile" .profiles) -}}
+.config/mise/conf.d/mobile.toml
+{{ end -}}
+
 # Temporary files
 **/*.tmp
 **/*.bak

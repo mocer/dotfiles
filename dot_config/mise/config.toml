@@ -1,10 +1,6 @@
 [settings]
 auto_update = true
 
-[env]
-CARGO_TERM_COLOR = "always"
-RUST_BACKTRACE = "1"
-
 [tools]
 # ── Cargo Ecosystem & Code Quality ────────────────────────────────────────
 "cargo:cargo-about" = "latest"     # Generates third-party license attribution from Cargo metadata.
@@ -14,7 +10,6 @@ RUST_BACKTRACE = "1"
 "cargo:cargo-edit" = "0.13.13"     # Provides add, rm, set-version, upgrade
 "cargo:cargo-expand" = "1.0.126"   # Macro expansion utility for debugging Rust code
 "cargo:cargo-machete" = "0.9.2"    # Detects unused dependencies in Cargo projects
-"cargo:cargo-ndk" = "latest"       # Builds Rust libraries for Android targets and generates the directory layout expected by Android jniLibs.
 "cargo:cargo-nextest" = "0.9.143"  # Next-generation test runner for Rust
 "cargo:cargo-tarpaulin" = "0.37.2" # Code coverage tool
 "cargo:cargo-watch" = "8.5.3"      # Watches project files and runs cargo commands on change
@@ -25,9 +20,7 @@ RUST_BACKTRACE = "1"
 "cargo:tokei" = "14.0.0"           # Blazing fast code statistics (lines of code, etc.)
 
 # ── Cloud & Docker Services CLI  ──────────────────────────────────────
-aws-cli = { version = "2.36.34", symlink_bins = "true" }                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            #AWS CLI; PYTHON
-gh = "2.98.0"                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       # Github CLI; GOLANG
-oc = { version = "4.22.12", bin = "oc", platforms = { linux-arm64 = { url = "https://mirror.openshift.com/pub/openshift-v4/clients/ocp/{{ version }}/openshift-client-linux-arm64-{{ version }}.tar.gz" }, linux-x64 = { url = "https://mirror.openshift.com/pub/openshift-v4/clients/ocp/{{ version }}/openshift-client-linux-{{ version }}.tar.gz" }, macos-arm64 = { url = "https://mirror.openshift.com/pub/openshift-v4/clients/ocp/{{ version }}/openshift-client-mac-arm64-{{ version }}.tar.gz" }, macos-x64 = { url = "https://mirror.openshift.com/pub/openshift-v4/clients/ocp/{{ version }}/openshift-client-mac-{{ version }}.tar.gz" }, windows-x64 = { url = "https://mirror.openshift.com/pub/openshift-v4/clients/ocp/{{ version }}/openshift-client-windows-{{ version }}.zip" } }, checksum_url = "https://mirror.openshift.com/pub/openshift-v4/clients/ocp/{{ version }}/sha256sum.txt", version_expr = "sortVersions(versions)", version_list_url = "https://mirror.openshift.com/pub/openshift-v4/clients/ocp/", version_regex = 'href="(\d+\.\d+\.\d+)/"' } # Openshift CLI; GOLANG
+gh = "2.98.0" # Github CLI; GOLANG
 
 # ── Core Infrastructure & VCS ────────────────────────────────────────────
 "cargo:cargo-binstall" = "1.22.0" # Required for fast binary installs
@@ -52,12 +45,11 @@ usql = "0.21.4"                        # Universal command-line interface for SQ
 uv = "0.12.7"                          # Python package manager
 claude-code = "2.1.251"                # May the prompt be with you: Anthropic's CLI agent
 
-# ── Shell Productivity Tools (v8 Standard) ────────────────────────────────
+# ── Shell Productivity and Utilities Tools ────────────────────────────────
 "cargo:atuin" = "18.20.1"                       # SQLite-backed shell history sync and search
 "cargo:bat" = "0.26.1"                          # Cat clone with syntax highlighting
 "cargo:bottom" = "0.14.9"                       # Cross-platform graphical process/system monitor (btm)
 "cargo:eza" = "0.23.5"                          # Modern replacement for ls
-"cargo:kcli" = "0.1.0"                          # Fast and simple Kakfa client
 "github:Feel-ix-343/markdown-oxide" = "0.25.12" # Markdown LSP
 "cargo:ouch" = "0.8.0"                          # Painless compression and decompression for any format
 "cargo:rip2" = "0.9.6"                          # A safer, rust-based rm
@@ -71,7 +63,3 @@ usage = "6.5.0"                                 # Usage is a spec and CLI for de
 # ── Secrets & Environment Management ──────────────────────────────────────
 sops = "3.13.3"         # Edit and manage SOPS-encrypted secret files
 "cargo:rage" = "0.12.1" # Modern and secure file encryption tool manage age-compatible identities
-
-# ── Languages ──────────────────────────────────────
-python = "3.14.7"
-java = "temurin-21"
