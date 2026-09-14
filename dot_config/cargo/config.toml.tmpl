@@ -32,4 +32,6 @@ jobs = {{ .cargo_jobs }}
 # across compatible builds and projects. The sccache executable must be
 # available outside interactive shells as well, for example through a stable
 # shim or symlink managed during machine setup.
+{{- if lookPath "sccache" }}
 rustc-wrapper = "sccache"
+{{- end }}

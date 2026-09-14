@@ -10,3 +10,8 @@ sccache_cache_size = "50G"
 # A machine-specific value may override this default through the local
 # chezmoi configuration (~/.config/chezmoi/chezmoi.toml).
 ghr_root = "~/Repos"
+
+# Default profile set. A machine overrides this in its local chezmoi.toml.
+# Extra profile are "poste" for working environment and "mobile" mobile development 
+# profiles = ["poste","mobile"]
+profiles = []

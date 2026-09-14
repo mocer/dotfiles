@@ -1,0 +1,9 @@
+{{ if has "mobile" .profiles -}}
+#!/usr/bin/env bash
+set -euo pipefail
+rustup target add \
+  {{ if eq .chezmoi.os "darwin" }}
+    aarch64-apple-ios aarch64-apple-ios-sim \
+  {{ end -}}
+  aarch64-linux-android armv7-linux-androideabi
+{{ end -}}
