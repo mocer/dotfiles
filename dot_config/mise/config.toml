@@ -1,13 +1,13 @@
 [tools]
 # ── Cargo Ecosystem & Code Quality ────────────────────────────────────────
-"cargo:cargo-about" = "latest"     # Generates third-party license attribution from Cargo metadata.
+"cargo:cargo-about" = "0.9.2"      # Generates third-party license attribution from Cargo metadata.
 "cargo:cargo-audit" = "0.22.2"     # Audits Cargo.lock for security vulnerabilities
 "cargo:cargo-cache" = "0.8.3"      # Manage/clean cargo home ($CARGO_HOME) cache
 "cargo:cargo-deny" = "0.20.2"      # License and dependency auditor
 "cargo:cargo-edit" = "0.13.13"     # Provides add, rm, set-version, upgrade
 "cargo:cargo-expand" = "1.0.126"   # Macro expansion utility for debugging Rust code
 "cargo:cargo-machete" = "0.9.2"    # Detects unused dependencies in Cargo projects
-"cargo:cargo-nextest" = "0.9.143"  # Next-generation test runner for Rust
+"cargo:cargo-nextest" = "0.9.144"  # Next-generation test runner for Rust
 "cargo:cargo-tarpaulin" = "0.37.2" # Code coverage tool
 "cargo:cargo-watch" = "8.5.3"      # Watches project files and runs cargo commands on change
 "cargo:git-cliff" = "2.14.1"       # Highly customizable changelog generator
@@ -32,18 +32,18 @@ gh = "2.100.0" # Github CLI; GOLANG
 "cargo:fd-find" = { version = "10.5.0", default-features = "true" } # Optimized file discovery (fd)
 "cargo:jaq" = { version = "3.1.1", default-features = "true" }      # A robust jq alternative with built-in support for YAML, CBOR, TOML, XML, and CSV/TSV, engineered for strict correctness.
 "cargo:ripgrep" = { version = "15.2.0", default-features = "true" } # Fast line-oriented search tool (rg)
-"cargo:skim" = { version = "5.6.6", default-features = "true" }     # Fuzzy finder written in Rust (sk)
+"cargo:skim" = { version = "5.7.0", default-features = "true" }     # Fuzzy finder written in Rust (sk)
 
 # ── Runtimes & Editors (Highly pre-optimized rust binary or not rust binary  )────────────────────────────────────────────────────
-"aqua:fish-shell/fish-shell" = "4.9.2" # Interactive shell used across macOS, Linux, and WSL2
+"aqua:fish-shell/fish-shell" = "4.9.3" # Interactive shell used across macOS, Linux, and WSL2
 deno = "2.9.6"                         # Secure runtime for JavaScript, TypeScript, and JSX
 helix = "25.07.1"                      # Post-modern modal text editor with built-in LSP
-usql = "0.21.4"                        # Universal command-line interface for SQL databases (Postgres, MySQL, SQLite, etc.); GOLANG
-uv = "0.12.10"                         # Python package manager
-claude-code = "2.1.263"                # May the prompt be with you: Anthropic's CLI agent
+usql = "0.21.5"                        # Universal command-line interface for SQL databases (Postgres, MySQL, SQLite, etc.); GOLANG
+uv = "0.12.13"                         # Python package manager
+claude-code = "2.1.270"                # May the prompt be with you: Anthropic's CLI agent
 
 # ── Shell Productivity and Utilities Tools ────────────────────────────────
-"cargo:atuin" = "18.21.0"                       # SQLite-backed shell history sync and search
+"cargo:atuin" = "18.22.0"                       # SQLite-backed shell history sync and search
 "cargo:bat" = "0.26.1"                          # Cat clone with syntax highlighting
 "cargo:bottom" = "0.14.9"                       # Cross-platform graphical process/system monitor (btm)
 "cargo:eza" = "0.23.5"                          # Modern replacement for ls
@@ -53,7 +53,7 @@ claude-code = "2.1.263"                # May the prompt be with you: Anthropic's
 "cargo:sd" = "1.0.0"                            # Intuitive find and replace (sed alternative)
 "cargo:starship" = "1.26.0"                     # Minimal, blazing-fast, and infinitely customizable shell prompt
 "cargo:taplo-cli" = "0.10.0"                    # Feature-rich TOML toolkit, linter, and formatter
-usage = "6.8.0"                                 # Usage is a spec and CLI for defining CLI tools
+usage = "6.9.0"                                 # Usage is a spec and CLI for defining CLI tools
 "cargo:xh" = "0.26.2"                           # Fast and user-friendly HTTP client
 "cargo:zoxide" = "0.10.0"                       # Smart cd command (z)
 

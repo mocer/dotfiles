@@ -4,13 +4,16 @@ default:
 
 # Refresh the stable Fish path used by native GUI applications.
 refresh-fish-link:
-    ./scripts/refresh-mise-fish-link
+    bash scripts/refresh-mise-fish-link
 
 # Install globally configured mise tools and refresh dependent links.
-setup-tools:
-    mise install
+upgrade:
+    mise self-update -y
+    mise upgrade --bump
     mise reshim
-    just refresh-fish-link
+    bash scripts/refresh-mise-fish-link
+    rustup update
+    uv tool upgrade --all
 
 # Verify the main development environment prerequisites.
 doctor:
