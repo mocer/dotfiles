@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+exec bash {{ joinPath .chezmoi.sourceDir "scripts/refresh-mise-deno-link" | quote }}

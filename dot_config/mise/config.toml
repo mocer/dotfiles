@@ -17,7 +17,7 @@
 "cargo:tokei" = "15.0.0"           # Blazing fast code statistics (lines of code, etc.)
 
 # ── Cloud & Docker Services CLI  ──────────────────────────────────────
-gh = "2.100.0" # Github CLI; GOLANG
+gh = "2.101.0" # Github CLI; GOLANG
 
 # ── Core Infrastructure & VCS ────────────────────────────────────────────
 "cargo:cargo-binstall" = "1.23.0" # Required for fast binary installs
@@ -39,8 +39,8 @@ gh = "2.100.0" # Github CLI; GOLANG
 deno = "2.9.6"                         # Secure runtime for JavaScript, TypeScript, and JSX
 helix = "25.07.1"                      # Post-modern modal text editor with built-in LSP
 usql = "0.21.5"                        # Universal command-line interface for SQL databases (Postgres, MySQL, SQLite, etc.); GOLANG
-uv = "0.12.13"                         # Python package manager
-claude-code = "2.1.270"                # May the prompt be with you: Anthropic's CLI agent
+uv = "0.12.15"                         # Python package manager
+claude-code = "2.1.273"                # May the prompt be with you: Anthropic's CLI agent
 
 # ── Shell Productivity and Utilities Tools ────────────────────────────────
 "cargo:atuin" = "18.22.0"                       # SQLite-backed shell history sync and search
@@ -48,12 +48,12 @@ claude-code = "2.1.270"                # May the prompt be with you: Anthropic's
 "cargo:bottom" = "0.14.9"                       # Cross-platform graphical process/system monitor (btm)
 "cargo:eza" = "0.23.5"                          # Modern replacement for ls
 "github:Feel-ix-343/markdown-oxide" = "0.25.12" # Markdown LSP
-"cargo:ouch" = "0.8.2"                          # Painless compression and decompression for any format
+"cargo:ouch" = "0.8.3"                          # Painless compression and decompression for any format
 "cargo:rip2" = "0.9.6"                          # A safer, rust-based rm
 "cargo:sd" = "1.0.0"                            # Intuitive find and replace (sed alternative)
 "cargo:starship" = "1.26.0"                     # Minimal, blazing-fast, and infinitely customizable shell prompt
 "cargo:taplo-cli" = "0.10.0"                    # Feature-rich TOML toolkit, linter, and formatter
-usage = "6.9.0"                                 # Usage is a spec and CLI for defining CLI tools
+usage = "6.9.1"                                 # Usage is a spec and CLI for defining CLI tools
 "cargo:xh" = "0.26.2"                           # Fast and user-friendly HTTP client
 "cargo:zoxide" = "0.10.0"                       # Smart cd command (z)
 

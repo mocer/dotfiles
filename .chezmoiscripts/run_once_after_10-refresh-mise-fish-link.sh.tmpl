@@ -1,4 +1,4 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-exec bash "{{ .chezmoi.sourceDir }}/scripts/refresh-mise-fish-link"
+exec bash {{ joinPath .chezmoi.sourceDir "scripts/refresh-mise-fish-link" | quote }}
