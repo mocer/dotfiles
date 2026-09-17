@@ -12,6 +12,26 @@ sccache_cache_size = "50G"
 ghr_root = "~/Repos"
 
 # Default profile set. A machine overrides this in its local chezmoi.toml.
-# Extra profile are "poste" for working environment and "mobile" mobile development 
-# profiles = ["poste","mobile"]
+# Extra profiles are "poste" for the work environment and "mobile" for
+# mobile development.
+# profiles = ["poste", "mobile"]
 profiles = []
+
+# Default mpv playback and rendering settings.
+#
+# Machine-specific values may override these defaults through the local
+# chezmoi configuration. This is useful when managed machines have different
+# graphics hardware, memory capacity, displays, or operating systems.
+[mpv]
+video_output = "gpu-next"
+hardware_decoding = "auto-safe"
+profile = "high-quality"
+demuxer_max_bytes = "512MiB"
+demuxer_readahead_seconds = 300
+scale = "ewa_lanczos"
+chroma_scale = "ewa_lanczos"
+downscale = "mitchell"
+video_sync = "display-resample"
+interpolation = true
+subtitle_auto = "fuzzy"
+audio_file_auto = "fuzzy"

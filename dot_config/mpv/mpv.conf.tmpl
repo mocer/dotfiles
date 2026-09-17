@@ -1,0 +1,19 @@
+# --- Hardware Decoding & Rendering ---
+vo=gpu-next
+hwdec=videotoolbox
+profile=high-quality
+
+# --- Memory & Cache ---
+demuxer-max-bytes=1000MiB
+demuxer-readahead-secs=600
+
+# --- Video Scaling & Display ---
+scale=ewa_lanczos
+cscale=ewa_lanczos
+dscale=mitchell
+video-sync=display-resample
+interpolation=yes
+
+# --- Subtitles & Audio ---
+sub-auto=fuzzy
+audio-file-auto=fuzzy

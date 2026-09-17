@@ -6,6 +6,13 @@
 .config/mise/conf.d/mobile.toml
 {{ end -}}
 
+# Repository-only files
+README.md
+justfile
+
+# Operational scripts invoked from the chezmoi source directory
+scripts/**
+
 # Temporary files
 **/*.tmp
 **/*.bak
@@ -17,3 +24,5 @@
 
 # Dependencies
 node_modules/
+
+

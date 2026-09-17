@@ -1,0 +1,79 @@
+#!/usr/bin/env bash
+
+# Maintain a stable user-level path to the Deno binary managed by mise.
+#
+# Native GUI applications such as IINA do not necessarily inherit the shell
+# environment initialized by mise. They should use this stable path instead of:
+#
+# - the version-specific mise installation path, which changes after upgrades;
+# - a mise shim, which still depends on mise runtime resolution.
+#
+# Run this script after installing or upgrading Deno through mise.
+
+set -euo pipefail
+
+readonly link_path="${HOME}/.local/bin/deno"
+readonly link_dir="${link_path%/*}"
+
+if ! command -v mise >/dev/null 2>&1; then
+    printf 'ERROR: mise is not available in PATH.\n' >&2
+    exit 1
+fi
+
+deno_path="$(mise which deno 2>/dev/null || true)"
+
+if [[ -z "${deno_path}" ]]; then
+    printf 'ERROR: mise could not resolve the active Deno binary.\n' >&2
+    printf 'Install or activate Deno through the global mise configuration.\n' >&2
+    exit 1
+fi
+
+if [[ ! -x "${deno_path}" ]]; then
+    printf 'ERROR: the Deno binary resolved by mise is not executable:\n' >&2
+    printf '  %s\n' "${deno_path}" >&2
+    exit 1
+fi
+
+mkdir -p "${link_dir}"
+
+if [[ -e "${link_path}" && ! -L "${link_path}" ]]; then
+    printf 'ERROR: refusing to replace a non-symlink path:\n' >&2
+    printf '  %s\n' "${link_path}" >&2
+    exit 1
+fi
+
+current_target="$(readlink "${link_path}" 2>/dev/null || true)"
+
+if [[ "${current_target}" == "${deno_path}" && -x "${link_path}" ]]; then
+    printf 'Deno link is already current:\n'
+    printf '  %s -> %s\n' "${link_path}" "${deno_path}"
+    "${link_path}" --version
+    exit 0
+fi
+
+temporary_link="${link_path}.new"
+
+rm -f "${temporary_link}"
+ln -s "${deno_path}" "${temporary_link}"
+mv -f "${temporary_link}" "${link_path}"
+
+resolved_path="$(readlink "${link_path}" 2>/dev/null || true)"
+
+if [[ "${resolved_path}" != "${deno_path}" ]]; then
+    printf 'ERROR: the Deno link does not point to the expected target.\n' >&2
+    printf 'Expected: %s\n' "${deno_path}" >&2
+    printf 'Actual:   %s\n' "${resolved_path:-<missing>}" >&2
+    exit 1
+fi
+
+if [[ ! -x "${link_path}" ]]; then
+    printf 'ERROR: the updated Deno link is not executable:\n' >&2
+    printf '  %s\n' "${link_path}" >&2
+    exit 1
+fi
+
+printf 'Deno link updated successfully:\n'
+printf '  %s -> %s\n' "${link_path}" "${resolved_path}"
+
+"${link_path}" --version
+
