@@ -1,11 +1,11 @@
-function system_upgrade --description "Upgrade managed tools and reconcile local machine state"
+function system_upgrade --description "Run the dotfiles system upgrade workflow"
     if not command -q chezmoi
         echo "ERROR: chezmoi is not available in PATH." >&2
         return 1
     end
 
-    if not command -q mise
-        echo "ERROR: mise is not available in PATH." >&2
+    if not command -q just
+        echo "ERROR: just is not available in PATH." >&2
         return 1
     end
 
@@ -16,41 +16,28 @@ function system_upgrade --description "Upgrade managed tools and reconcile local
         return 1
     end
 
-    set -l refresh_script "$source_dir/scripts/refresh-mise-fish-link"
+    set -l justfile "$source_dir/justfile"
 
-    if not test -f "$refresh_script"
-        echo "ERROR: Fish link refresh script not found:" >&2
-        echo "       $refresh_script" >&2
+    if not test -f "$justfile"
+        echo "ERROR: dotfiles justfile not found:" >&2
+        echo "       $justfile" >&2
         return 1
     end
 
-    echo "==> Upgrading chezmoi"
-    chezmoi upgrade
-    or return 1
+    echo "==> Running the dotfiles system upgrade workflow"
 
-    echo "==> Updating mise"
-    mise self-update -y
-    or return 1
+    command just \
+        --justfile "$justfile" \
+        --working-directory "$source_dir" \
+        upgrade
 
-    echo "==> Upgrading mise-managed tools"
-    mise upgrade --bump
-    or return 1
+    set -l upgrade_status $status
 
-    echo "==> Updating mise shims"
-    mise reshim
-    or return 1
-
-    echo "==> Refreshing the stable Fish link"
-    bash "$refresh_script"
-    or return 1
-
-    echo "==> Updating Rust toolchains"
-    rustup update
-    or return 1
-
-    echo "==> Updating uv-managed tools"
-    uv tool upgrade --all
-    or return 1
+    if test $upgrade_status -ne 0
+        echo >&2
+        echo "ERROR: system upgrade failed." >&2
+        return $upgrade_status
+    end
 
     echo
     echo "System upgrade completed successfully."
