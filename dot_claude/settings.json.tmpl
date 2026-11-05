@@ -1,0 +1,29 @@
+{{- /*
+  Claude Code user settings for Amazon Bedrock (profile "poste").
+
+  Data sources:
+  - .chezmoidata/bedrock.toml       shared defaults (region, profile, default_model)
+  - ~/.config/chezmoi/chezmoi.toml  personal inference profile ARNs
+
+  Rendered only when all ARNs exist (see .chezmoiignore). Every string goes
+  through toJson so Windows paths and special characters are escaped correctly.
+*/ -}}
+{{- $b := .bedrock -}}
+{{- $exe := ternary "credential-process.exe" "credential-process" (eq .chezmoi.os "windows") -}}
+{{- $cp := joinPath .chezmoi.homeDir ".aws" "claude-code" $exe -}}
+{{- $models := dict "opus" $b.opus_arn "sonnet" $b.sonnet_arn "haiku" $b.haiku_arn -}}
+{{- $default := get $models (get $b "default_model" | default "sonnet") -}}
+{{- if not $default }}{{ fail (printf "bedrock.default_model must be opus, sonnet or haiku, got %q" $b.default_model) }}{{ end -}}
+{
+  "env": {
+    "CLAUDE_CODE_USE_BEDROCK": "1",
+    "AWS_REGION": {{ $b.region | toJson }},
+    "AWS_PROFILE": {{ $b.profile | toJson }},
+    "ANTHROPIC_MODEL": {{ $default | toJson }},
+    "ANTHROPIC_DEFAULT_OPUS_MODEL": {{ $b.opus_arn | toJson }},
+    "ANTHROPIC_DEFAULT_SONNET_MODEL": {{ $b.sonnet_arn | toJson }},
+    "ANTHROPIC_DEFAULT_HAIKU_MODEL": {{ $b.haiku_arn | toJson }}
+  },
+  "awsAuthRefresh": {{ printf "%s --profile %s" ($cp | quote) $b.profile | toJson }},
+  "includeCoAuthoredBy": false
+}

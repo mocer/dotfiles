@@ -1,0 +1,5 @@
+{{- $dir := joinPath .chezmoi.homeDir ".aws" "claude-code" -}}
+{{- $exe := ternary "credential-process.exe" "credential-process" (eq .chezmoi.os "windows") -}}
+[profile {{ .bedrock.profile }}]
+credential_process = {{ joinPath $dir $exe | quote }} --profile {{ .bedrock.profile }}
+region = {{ .bedrock.region }}
