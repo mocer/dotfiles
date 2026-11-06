@@ -5,12 +5,20 @@
   - .chezmoidata/bedrock.toml       shared defaults (region, profile, default_model)
   - ~/.config/chezmoi/chezmoi.toml  personal inference profile ARNs
 
+  credential-process is resolved through the mise shim; it reads its company
+  configuration from ~/claude-code-with-bedrock/config.json (deployed by chezmoi
+  from claude-code-with-bedrock/encrypted_config.json.age).
+
   Rendered only when all ARNs exist (see .chezmoiignore). Every string goes
   through toJson so Windows paths and special characters are escaped correctly.
 */ -}}
 {{- $b := .bedrock -}}
-{{- $exe := ternary "credential-process.exe" "credential-process" (eq .chezmoi.os "windows") -}}
-{{- $cp := joinPath .chezmoi.homeDir ".aws" "claude-code" $exe -}}
+{{- range $k := list "opus_arn" "sonnet_arn" "haiku_arn" }}
+{{-   if not (get $b $k) }}{{ fail (printf "bedrock.%s missing: add it under [data.bedrock] in ~/.config/chezmoi/chezmoi.toml" $k) }}{{ end }}
+{{- end -}}
+{{- $win := eq .chezmoi.os "windows" -}}
+{{- $shims := ternary (joinPath (env "LOCALAPPDATA") "mise" "shims") (joinPath .chezmoi.homeDir ".local" "share" "mise" "shims") $win -}}
+{{- $cp := joinPath $shims (ternary "credential-process.exe" "credential-process" $win) -}}
 {{- $models := dict "opus" $b.opus_arn "sonnet" $b.sonnet_arn "haiku" $b.haiku_arn -}}
 {{- $default := get $models (get $b "default_model" | default "sonnet") -}}
 {{- if not $default }}{{ fail (printf "bedrock.default_model must be opus, sonnet or haiku, got %q" $b.default_model) }}{{ end -}}
@@ -27,3 +35,4 @@
   "awsAuthRefresh": {{ printf "%s --profile %s" ($cp | quote) $b.profile | toJson }},
   "includeCoAuthoredBy": false
 }
+

@@ -1,5 +1,5 @@
-{{- $dir := joinPath .chezmoi.homeDir ".aws" "claude-code" -}}
+{{- $shims := ternary (joinPath (env "LOCALAPPDATA") "mise" "shims") (joinPath .chezmoi.homeDir ".local" "share" "mise" "shims") (eq .chezmoi.os "windows") -}}
 {{- $exe := ternary "credential-process.exe" "credential-process" (eq .chezmoi.os "windows") -}}
 [profile {{ .bedrock.profile }}]
-credential_process = {{ joinPath $dir $exe | quote }} --profile {{ .bedrock.profile }}
+credential_process = {{ joinPath $shims $exe | quote }} --profile {{ .bedrock.profile }}
 region = {{ .bedrock.region }}

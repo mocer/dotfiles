@@ -1,13 +1,15 @@
 # Chezmoi profiles management
+#
+#
+
 {{- $poste := has "poste" .profiles }}
-{{- $arns := and (hasKey .bedrock "opus_arn") (hasKey .bedrock "sonnet_arn") (hasKey .bedrock "haiku_arn") }}
+{{- $arns := and $poste (get .bedrock "opus_arn") (get .bedrock "sonnet_arn") (get .bedrock "haiku_arn") }}
 {{ if not $poste -}}
 .config/mise/conf.d/poste.toml
 .aws/config
-.aws/claude-code
+claude-code-with-bedrock
 .claude/settings.json
 {{ else if not $arns -}}
-# First run: ARNs not yet created by `credential-process --setup-profiles`.
 .claude/settings.json
 {{ end -}}
 {{ if not (has "mobile" .profiles) -}}

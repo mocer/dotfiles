@@ -1,0 +1,16 @@
+# chezmoi:template:left-delimiter="[[" right-delimiter="]]"
+[tools]
+#aws-cli = { version = "2.39.3", symlink_bins = "true" } 
+
+# ── Cloud & Docker Services CLI ──────────────────────────────────────
+oc = { version = "5.0.0", bin = "oc", checksum_url = "https://mirror.openshift.com/pub/openshift-v4/clients/ocp/{{ version }}/sha256sum.txt", platforms = { linux-arm64 = { url = "https://mirror.openshift.com/pub/openshift-v4/clients/ocp/{{ version }}/openshift-client-linux-arm64-{{ version }}.tar.gz" }, linux-x64 = { url = "https://mirror.openshift.com/pub/openshift-v4/clients/ocp/{{ version }}/openshift-client-linux-{{ version }}.tar.gz" }, macos-arm64 = { url = "https://mirror.openshift.com/pub/openshift-v4/clients/ocp/{{ version }}/openshift-client-mac-arm64-{{ version }}.tar.gz" }, macos-x64 = { url = "https://mirror.openshift.com/pub/openshift-v4/clients/ocp/{{ version }}/openshift-client-mac-{{ version }}.tar.gz" }, windows-x64 = { url = "https://mirror.openshift.com/pub/openshift-v4/clients/ocp/{{ version }}/openshift-client-windows-{{ version }}.zip" } }, version_expr = "sortVersions(versions)", version_list_url = "https://mirror.openshift.com/pub/openshift-v4/clients/ocp/", version_regex = 'href="(\d+\.\d+\.\d+)/"' } # Openshift CLI; GOLANG
+
+# ── Shell Utilities ──────────────────────────────────────────────────
+"cargo:kcli" = "0.1.0" # Fast and simple Kafka client
+
+# Client-side OIDC → Cognito → STS bridge for Claude Code on Bedrock.
+# Version pinned: the tag list also contains -beta releases.
+[[- $os := .chezmoi.os ]]
+[[- $arch := ternary "arm64" "amd64" (eq .chezmoi.arch "arm64") ]]
+[[- $asset := printf "credential-process-%s-%s%s" $os $arch (ternary ".exe" "" (eq $os "windows")) ]]
+"github:aws-solutions-library-samples/guidance-for-claude-code-with-amazon-bedrock" = { version = "2.5.3", asset_pattern = [[ $asset | quote ]], bin = "credential-process" }
