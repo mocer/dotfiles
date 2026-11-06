@@ -1,6 +1,16 @@
 # Chezmoi profiles management
-{{ if not (has "poste" .profiles) -}}
+#
+#
+
+{{- $poste := has "poste" .profiles }}
+{{- $arns := and $poste (get .bedrock "opus_arn") (get .bedrock "sonnet_arn") (get .bedrock "haiku_arn") }}
+{{ if not $poste -}}
 .config/mise/conf.d/poste.toml
+.aws/config
+claude-code-with-bedrock
+.claude/settings.json
+{{ else if not $arns -}}
+.claude/settings.json
 {{ end -}}
 {{ if not (has "mobile" .profiles) -}}
 .config/mise/conf.d/mobile.toml

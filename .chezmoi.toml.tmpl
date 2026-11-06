@@ -1,0 +1,35 @@
+{{- /*
+  chezmoi configuration and machine-local data.
+
+  Shared values live in .chezmoidata/ and are merged at runtime.
+  Values below are asked once and preserved on every `chezmoi init`.
+  To add a new profile, extend $choices.
+*/ -}}
+{{- $choices  := list "poste" "mobile" -}}
+{{- $profiles := promptMultichoiceOnce . "profiles" "Profiles for this machine" $choices -}}
+{{- $poste    := has "poste" $profiles -}}
+{{- $hwdec    := dict "darwin" "videotoolbox" "linux" "vaapi" "windows" "d3d11va" -}}
+sourceDir  = {{ .chezmoi.sourceDir | quote }}
+encryption = "age"
+
+[age]
+useBuiltin = true
+identity   = {{ joinPath .chezmoi.homeDir ".config" "chezmoi" "key.txt" | quote }}
+recipient  = "age1r9vrlad9xmwef8djxchgrpmvwugmvz56znsspfrhwr38d9c9av9qpgx9kc"
+
+[data]
+# Overrides of .chezmoidata defaults for this machine only.
+# cargo_jobs = 8
+# sccache_cache_size = "20G"
+# ghr_root = "~/Repos"
+profiles = [{{ range $i, $p := $profiles }}{{ if $i }}, {{ end }}{{ $p | quote }}{{ end }}]
+
+[data.mpv]
+hardware_decoding = {{ get $hwdec .chezmoi.os | default "auto" | quote }}
+{{- if $poste }}
+
+[data.bedrock]
+opus_arn   = {{ promptStringOnce . "bedrock.opus_arn"   "Opus inference profile ARN (empty to skip)"   | quote }}
+sonnet_arn = {{ promptStringOnce . "bedrock.sonnet_arn" "Sonnet inference profile ARN (empty to skip)" | quote }}
+haiku_arn  = {{ promptStringOnce . "bedrock.haiku_arn"  "Haiku inference profile ARN (empty to skip)"  | quote }}
+{{- end }}
