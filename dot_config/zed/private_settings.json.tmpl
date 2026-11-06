@@ -1,3 +1,6 @@
+{{- $b := .bedrock -}}
+{{- $bedrock := and (has "poste" .profiles) (get $b "opus_arn") (get $b "sonnet_arn") (get $b "haiku_arn") -}}
+
 // Zed settings
 //
 // For information on how to configure Zed, see the Zed
@@ -6,6 +9,8 @@
 // To see all of Zed's default settings without changing your
 // custom settings, run `zed: open default settings` from the
 // command palette (cmd-shift-p / ctrl-shift-p)
+
+
 {
   "terminal": {
     "shell": {
@@ -24,36 +29,11 @@
   "agent": {
     "dock": "right",
     "favorite_models": [
-      {
-        "provider": "amazon-bedrock",
-        "model": "arn:aws:bedrock:eu-central-1:190734623145:application-inference-profile/w6vvp7ux999n",
-        "enable_thinking": true
-      },
-      {
-        "provider": "amazon-bedrock",
-        "model": "arn:aws:bedrock:eu-central-1:190734623145:application-inference-profile/xb0nk2qysau9",
-        "enable_thinking": true
-      },
-      {
-        "provider": "copilot_chat",
-        "model": "claude-sonnet-4.6",
-        "enable_thinking": false
-      },
-      {
-        "provider": "copilot_chat",
-        "model": "claude-opus-4.6",
-        "enable_thinking": false
-      },
-      {
-        "provider": "copilot_chat",
-        "model": "gpt-4.1",
-        "enable_thinking": false
-      },
-      {
-        "provider": "copilot_chat",
-        "model": "gpt-5.3-codex",
-        "enable_thinking": false
-      },
+      {{- if $bedrock }}
+      { "provider": "amazon-bedrock", "model": {{ $b.opus_arn | toJson }},   "enable_thinking": true },
+      { "provider": "amazon-bedrock", "model": {{ $b.sonnet_arn | toJson }}, "enable_thinking": true },
+      { "provider": "amazon-bedrock", "model": {{ $b.haiku_arn | toJson }}, "enable_thinking": true },
+      {{- end }}
       {
         "provider": "google",
         "model": "gemini-3.5-flash",
@@ -67,12 +47,6 @@
         "effort": "high"
       }
     ],
-    "default_model": {
-      "effort": "medium",
-      "provider": "google",
-      "model": "gemini-3.5-flash",
-      "enable_thinking": true,
-    },
     "model_parameters": [],
     "default_profile": "ask",
   },
@@ -105,26 +79,20 @@
     },
   },
   "language_models": {
+  {{- if $bedrock }}
     "bedrock": {
-      "authentication_method": "api_key",
+      "authentication_method": "named_profile",
+      "profile": {{ $b.profile | toJson }},
+      "region": {{ $b.region | toJson }},
       "allow_global": false,
       "allow_extended_context": true,
-      "region": "eu-central-1",
       "available_models": [
-        {
-          "name": "arn:aws:bedrock:eu-central-1:190734623145:application-inference-profile/xb0nk2qysau9",
-          "display_name": "Claude Sonnet (PCLS)",
-          "max_tokens": 4096,
-          "max_output_tokens": 16000,
-        },
-        {
-          "name": "arn:aws:bedrock:eu-central-1:190734623145:application-inference-profile/w6vvp7ux999n",
-          "display_name": "Claude Opus (PCLS)",
-          "max_tokens": 4096,
-          "max_output_tokens": 16000,
-        },
+        { "name": {{ $b.opus_arn | toJson }},   "display_name": "Claude Opus 4.7",   "max_tokens": 200000, "max_output_tokens": 16000 },
+        { "name": {{ $b.sonnet_arn | toJson }}, "display_name": "Claude Sonnet 4.6", "max_tokens": 200000, "max_output_tokens": 16000 },
+        { "name": {{ $b.haiku_arn | toJson }},  "display_name": "Claude Haiku 4.5",  "max_tokens": 200000, "max_output_tokens": 16000 },
       ],
     },
+  {{- end }}
   },
   "lsp": {
     "rust-analyzer": {
