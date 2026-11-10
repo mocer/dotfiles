@@ -1,0 +1,10 @@
+{{- /*
+  sccache configuration, read by every sccache process (shell, Zed, GUI apps).
+
+  Data sources:
+  - .chezmoidata.toml               sccache_cache_size_gib (shared default)
+  - ~/.config/chezmoi/chezmoi.toml  optional per-machine override
+*/ -}}
+[cache.disk]
+dir  = {{ joinPath .chezmoi.homeDir ".cache" "sccache" | quote }}
+size = {{ mul (get . "sccache_cache_size_gib" | default 50) 1073741824 }}  # bytes

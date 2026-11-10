@@ -1,7 +1,7 @@
 # This file is rendered by chezmoi into ~/.config/cargo/config.toml.
 #
 # The template keeps Cargo configuration consistent across macOS, Linux,
-# and WSL2 while still selecting values that depend on the local platform.
+# and Windows w/o WSL2 while still selecting values that depend on the local platform.
 # Chezmoi provides the operating system and CPU architecture automatically
 # through .chezmoi.os and .chezmoi.arch, so those values must not be duplicated
 # in machine-local data.
@@ -35,3 +35,10 @@ jobs = {{ .cargo_jobs }}
 {{- if lookPath "sccache" }}
 rustc-wrapper = "sccache"
 {{- end }}
+
+# Shared target directory for every project, independent of the shell environment.
+target-dir = {{ joinPath .chezmoi.homeDir ".cargo" "target" | quote }}
+
+[env]
+SCCACHE_DIR = {{ joinPath .chezmoi.homeDir ".cache" "sccache" | quote }}
+SCCACHE_CACHE_SIZE = {{ get . "sccache_cache_size" | default "50G" | quote }}

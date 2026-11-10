@@ -12,7 +12,7 @@
 "cargo:cargo-watch" = "8.5.3"      # Watches project files and runs cargo commands on change
 "cargo:git-cliff" = "2.14.2"       # Highly customizable changelog generator
 "cargo:grex" = "1.4.6"             # Generate regular expressions from user-provided test cases
-"cargo:hyperfine" = "2.0.0"       # Command-line benchmarking tool
+"cargo:hyperfine" = "2.0.0"        # Command-line benchmarking tool
 "cargo:sqlx-cli" = "0.9.0"         # SQLX CLI (provides sqlx and cargo-sqlx)
 "cargo:tokei" = "15.0.0"           # Blazing fast code statistics (lines of code, etc.)
 
@@ -39,24 +39,23 @@ gh = "2.103.3" # Github CLI; GOLANG
 deno = "2.9.8"                         # Secure runtime for JavaScript, TypeScript, and JSX
 helix = "25.07.1"                      # Post-modern modal text editor with built-in LSP
 usql = "0.21.6"                        # Universal command-line interface for SQL databases (Postgres, MySQL, SQLite, etc.); GOLANG
-uv = "0.13.6"                         # Python package manager
-claude-code = "2.1.316"                # May the prompt be with you: Anthropic's CLI agent
+uv = "0.13.6"                          # Python package manager
 yq = "4.54.1"
 
 # ── Shell Productivity and Utilities Tools ────────────────────────────────
-"cargo:atuin" = "18.24.4"                       # SQLite-backed shell history sync and search
-"cargo:bat" = "0.26.1"                          # Cat clone with syntax highlighting
-"cargo:bottom" = "0.15.0"                       # Cross-platform graphical process/system monitor (btm)
-"cargo:eza" = "0.23.5"                          # Modern replacement for ls
-"github:Feel-ix-343/markdown-oxide" = "0.25.12" # Markdown LSP
-"cargo:ouch" = "0.8.3"                          # Painless compression and decompression for any format
-"cargo:rip2" = "0.9.7"                          # A safer, rust-based rm
-"cargo:sd" = "1.0.0"                            # Intuitive find and replace (sed alternative)
-"cargo:starship" = "1.27.0"                     # Minimal, blazing-fast, and infinitely customizable shell prompt
-"cargo:taplo-cli" = "0.10.0"                    # Feature-rich TOML toolkit, linter, and formatter
-usage = { version = "7.1.5", workflow = "publish-cli.yml" }                                 # Usage is a spec and CLI for defining CLI tools
-"cargo:xh" = "0.26.3"                           # Fast and user-friendly HTTP client
-"cargo:zoxide" = "0.10.0"                       # Smart cd command (z)
+"cargo:atuin" = "18.24.4"                                   # SQLite-backed shell history sync and search
+"cargo:bat" = "0.26.1"                                      # Cat clone with syntax highlighting
+"cargo:bottom" = "0.15.0"                                   # Cross-platform graphical process/system monitor (btm)
+"cargo:eza" = "0.23.5"                                      # Modern replacement for ls
+"github:Feel-ix-343/markdown-oxide" = "0.25.12"             # Markdown LSP
+"cargo:ouch" = "0.8.3"                                      # Painless compression and decompression for any format
+"cargo:rip2" = "0.9.7"                                      # A safer, rust-based rm
+"cargo:sd" = "1.0.0"                                        # Intuitive find and replace (sed alternative)
+"cargo:starship" = "1.27.0"                                 # Minimal, blazing-fast, and infinitely customizable shell prompt
+"cargo:taplo-cli" = "0.10.0"                                # Feature-rich TOML toolkit, linter, and formatter
+usage = { version = "7.1.5", workflow = "publish-cli.yml" } # Usage is a spec and CLI for defining CLI tools
+"cargo:xh" = "0.26.3"                                       # Fast and user-friendly HTTP client
+"cargo:zoxide" = "0.10.0"                                   # Smart cd command (z)
 
 # ── Secrets & Environment Management ──────────────────────────────────────
 sops = "3.13.3"         # Edit and manage SOPS-encrypted secret files

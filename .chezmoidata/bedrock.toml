@@ -1,8 +1,7 @@
 # Shared Bedrock defaults for the "poste" profile.
 #
 # Personal application inference profile ARNs are NOT stored here: they are
-# created once per user by `credential-process` and belong to the
-# machine-local chezmoi configuration (~/.config/chezmoi/chezmoi.toml).
+# created created once per user with the company binary (--setup-profiles) and belong to the machine-local chezmoi configuration (~/.config/chezmoi/chezmoi.toml).
 [bedrock]
 region = "eu-central-1"
 profile = "claude-code"
