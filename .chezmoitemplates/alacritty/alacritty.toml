@@ -1,0 +1,96 @@
+{{- $isWSL := false -}}
+{{- if eq .chezmoi.os "linux" -}}
+{{-   $isWSL = (.chezmoi.kernel.osrelease | lower | contains "microsoft") -}}
+{{- end -}}
+# This file configures the native Alacritty application for macOS, Linux,
+# or the Windows host associated with the current WSL2 environment.
+#
+# On macOS and native Linux, Alacritty starts the Fish shell installed by mise.
+# On WSL2, Alacritty runs as a native Windows application and starts wsl.exe,
+# which enters the configured distribution and executes the mise-managed Fish
+# shell inside Linux. This avoids running a Linux GUI application through WSLg
+# or an external X11 server.
+#
+# WSL-specific values are read from the local chezmoi configuration:
+#
+# [data]
+# wsl_distribution = "Ubuntu"
+#
+# The distribution name is intentionally machine-local because it may differ
+# between Windows hosts and must match the name returned by:
+#
+#   wsl.exe --list --quiet
+#
+
+
+[env]
+TERM = "alacritty"
+COLORTERM = "truecolor"
+
+[general]
+{{- if $isWSL }}
+# Alacritty runs on Windows, so imported files must use Windows-visible paths.
+# Forward slashes are accepted by Alacritty and avoid TOML backslash escaping.
+import = ["C:/Users/{{ .windows_profile }}/AppData/Roaming/alacritty/themes/themes/enfocado_dark.toml"]
+{{- else }}
+# Native Unix installations read the theme from the managed XDG config tree.
+import = ["{{ .chezmoi.homeDir }}/.config/alacritty/themes/themes/enfocado_dark.toml"]
+
+# Start native sessions in the current user's home directory.
+working_directory = "{{ .chezmoi.homeDir }}"
+{{- end }}
+
+[terminal.shell]
+{{- if $isWSL }}
+# Start the selected WSL2 distribution from the native Windows Alacritty process.
+# --cd ~ selects the Linux home directory instead of inheriting a Windows path.
+# --exec bypasses the distribution's default shell and starts the Fish version
+# pinned and installed by mise inside WSL2.
+program = "wsl.exe"
+args = [
+  "-d",
+  "{{ .wsl_distribution }}",
+  "--cd",
+  "~",
+  "--exec",
+  "{{ .chezmoi.homeDir }}/.local/bin/fish",
+]
+{{- else if or (eq .chezmoi.os "darwin") (eq .chezmoi.os "linux") }}
+# Use the stable mise shim instead of a package-manager-specific Fish path.
+# This keeps the Alacritty configuration identical across macOS and Linux.
+program = "{{ .chezmoi.homeDir }}/.local/bin/fish"
+{{- else }}
+# Fail during rendering rather than generating an unusable shell configuration.
+{{ fail (printf "Unsupported platform for Alacritty shell configuration: %s" .chezmoi.os) }}
+{{- end }}
+
+[font]
+size = 15.0
+
+[font.bold]
+family = "FiraCode Nerd Font"
+style = "Bold"
+
+[font.italic]
+family = "FiraCode Nerd Font"
+style = "Italic"
+
+[font.normal]
+family = "FiraCode Nerd Font"
+style = "Retina"
+
+[font.offset]
+x = 0
+y = -2
+
+[window]
+padding.x = 5
+padding.y = 5
+opacity = 0.9
+{{- if eq .chezmoi.os "darwin" }}
+
+# Apply macOS-specific native window effects only where they are supported.
+decorations = "Buttonless"
+blur = true
+{{- end }}
+

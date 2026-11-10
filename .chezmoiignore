@@ -16,6 +16,26 @@ claude-code-with-bedrock
 .config/mise/conf.d/mobile.toml
 {{ end -}}
 
+# Per-OS configuration locations (one shared template, one target per OS)
+{{ if ne .chezmoi.os "darwin" -}}
+Library
+{{ end -}}
+{{ if ne .chezmoi.os "windows" -}}
+AppData
+{{ end -}}
+{{ if eq .chezmoi.os "darwin" -}}
+.config/nushell
+{{ end -}}
+{{ if eq .chezmoi.os "windows" -}}
+.config/nushell
+.config/alacritty
+.config/zed
+.config/helix
+.config/gh
+.config/mpv
+.config/fish
+{{ end -}}
+
 # Handoff for agent
 docs/
 
@@ -23,6 +43,8 @@ docs/
 README.md
 justfile
 .gitattributes
+docs/**
+.DS_Store
 
 # Operational scripts invoked from the chezmoi source directory
 scripts/**
