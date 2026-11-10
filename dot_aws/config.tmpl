@@ -1,5 +1,15 @@
-{{- $shims := ternary (joinPath (env "LOCALAPPDATA") "mise" "shims") (joinPath .chezmoi.homeDir ".local" "share" "mise" "shims") (eq .chezmoi.os "windows") -}}
-{{- $exe := ternary "credential-process.exe" "credential-process" (eq .chezmoi.os "windows") -}}
-[profile {{ .bedrock.profile }}]
-credential_process = {{ joinPath $shims $exe | quote }} --profile {{ .bedrock.profile }}
-region = {{ .bedrock.region }}
+{{- /*
+  AWS shared config for Amazon Bedrock (profile "poste").
+
+  Data sources:
+  - .chezmoidata/bedrock.toml  shared defaults (region, profile)
+
+  credential_process runs the company credential-process binary, which reads
+  ~/claude-code-with-bedrock/config.json (deployed by chezmoi from
+  claude-code-with-bedrock/encrypted_config.json.age).
+*/ -}}
+{{- $b := .bedrock -}}
+{{- $cp := includeTemplate "credential-process-path" . -}}
+[profile {{ $b.profile }}]
+credential_process = {{ $cp | quote }} --profile {{ $b.profile }}
+region = {{ $b.region }}
