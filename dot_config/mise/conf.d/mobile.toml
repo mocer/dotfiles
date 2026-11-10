@@ -1,7 +1,7 @@
 
 [tools]
 # ── Cargo Build tools ────────────────────────────────────────
-"github:bbqsrc/cargo-ndk" = "latest" # Builds Rust libraries for Android targets and generates the directory layout expected by Android jniLibs.
+"github:bbqsrc/cargo-ndk" = "4.1.2" # Builds Rust libraries for Android targets and generates the directory layout expected by Android jniLibs.
 
 # ── Languages ──────────────────────────────────────
 java = "temurin-21"

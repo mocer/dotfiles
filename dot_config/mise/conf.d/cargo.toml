@@ -1,0 +1,13 @@
+# Tools without prebuilt releases for all three OSes.
+# Installed by cargo-binstall when a release exists, otherwise built from
+# source with `cargo install` (Windows needs the MSVC Build Tools).
+# Always applied: this is not a chezmoi profile.
+
+[tools]
+"cargo:cargo-cache" = "0.8.3"    # Manage/clean cargo home ($CARGO_HOME) cache; no release binaries
+"cargo:cargo-edit" = "0.13.14"   # Provides add, rm, set-version, upgrade; no release binaries
+"cargo:cargo-expand" = "1.0.127" # Macro expansion utility for debugging Rust code; no release binaries
+"cargo:sqlx-cli" = "0.9.0"       # SQLX CLI (provides sqlx and cargo-sqlx); no release binaries
+"cargo:tokei" = "15.0.0"         # Blazing fast code statistics; GitHub releases have no assets
+"cargo:eza" = "0.23.5"           # Modern replacement for ls; no macOS release binary
+"cargo:ghr" = "0.4.5"            # Parallel GitHub repository manager; releases are all marked pre-release, which mise skips
