@@ -1,42 +1,40 @@
 [tools]
+# Backend policy: registry short name first; explicit aqua:/github: when the short
+# name is missing or resolves to cargo:; cargo: only for crates without release
+# binaries on macOS arm64, Linux x64 and Windows x64.
+# Rust itself is installed by rustup, not by mise (cargo: only needs `cargo` on PATH).
+
 # ── Cargo Ecosystem & Code Quality ────────────────────────────────────────
-"cargo:cargo-about" = "0.9.3"      # Generates third-party license attribution from Cargo metadata.
-"cargo:cargo-audit" = "0.22.2"     # Audits Cargo.lock for security vulnerabilities
-"cargo:cargo-cache" = "0.8.3"      # Manage/clean cargo home ($CARGO_HOME) cache
-"cargo:cargo-deny" = "0.20.2"      # License and dependency auditor
-"cargo:cargo-edit" = "0.13.14"     # Provides add, rm, set-version, upgrade
-"cargo:cargo-expand" = "1.0.127"   # Macro expansion utility for debugging Rust code
-"cargo:cargo-machete" = "0.9.2"    # Detects unused dependencies in Cargo projects
-"cargo:cargo-nextest" = "0.9.150"  # Next-generation test runner for Rust
-"cargo:cargo-tarpaulin" = "0.37.5" # Code coverage tool
-"cargo:cargo-watch" = "8.5.3"      # Watches project files and runs cargo commands on change
-"cargo:git-cliff" = "2.14.2"       # Highly customizable changelog generator
-"cargo:grex" = "1.4.6"             # Generate regular expressions from user-provided test cases
-"cargo:hyperfine" = "2.0.0"        # Command-line benchmarking tool
-"cargo:sqlx-cli" = "0.9.0"         # SQLX CLI (provides sqlx and cargo-sqlx)
-"cargo:tokei" = "15.0.0"           # Blazing fast code statistics (lines of code, etc.)
+"github:EmbarkStudios/cargo-about" = "0.9.3"                  # Generates third-party license attribution from Cargo metadata.
+"aqua:rustsec/rustsec/cargo-audit" = "0.22.2"                 # Audits Cargo.lock for security vulnerabilities
+"cargo:cargo-cache" = "0.8.3"                                 # Manage/clean cargo home ($CARGO_HOME) cache; no release binaries
+cargo-deny = "0.20.2"                                         # License and dependency auditor
+"cargo:cargo-edit" = "0.13.14"                                # Provides add, rm, set-version, upgrade; no release binaries
+"cargo:cargo-expand" = "1.0.127"                              # Macro expansion utility for debugging Rust code; no release binaries
+"github:bnjbvr/cargo-machete" = "0.9.2"                       # Detects unused dependencies in Cargo projects
+"aqua:nextest-rs/nextest/cargo-nextest" = "0.9.150"           # Next-generation test runner for Rust
+"github:xd009642/tarpaulin" = "0.37.5"                        # Code coverage tool
+"aqua:watchexec/cargo-watch" = "8.5.3"                        # Watches project files and runs cargo commands on change
+git-cliff = "2.14.2"                                          # Highly customizable changelog generator
+grex = "1.4.6"                                                # Generate regular expressions from user-provided test cases
+hyperfine = "2.0.0"                                           # Command-line benchmarking tool
+"cargo:sqlx-cli" = "0.9.0"                                    # SQLX CLI (provides sqlx and cargo-sqlx); no release binaries
+"cargo:tokei" = "15.0.0"                                      # Blazing fast code statistics; GitHub releases have no assets
 
 # ── Cloud & Docker Services CLI  ──────────────────────────────────────
 gh = "2.103.3" # Github CLI; GOLANG
 
 # ── Core Infrastructure & VCS ────────────────────────────────────────────
-"cargo:cargo-binstall" = "1.26.2" # Required for fast binary installs
-"cargo:ghr" = "0.4.5"             # Parallel GitHub repository manager and automated release tool
-"cargo:just" = "1.59.0"           # Modern task runner and command organizer
-"cargo:jj-cli" = "0.46.0"         # Next-generation Git-compatible VCS with operation log and safety features
-"cargo:sccache" = "0.19.0"        # Compiler cache optimization
+"aqua:cargo-bins/cargo-binstall" = "1.26.2" # Required for fast binary installs (prebuilt)
+"cargo:ghr" = "0.4.5"                       # Parallel GitHub repository manager; releases are all marked pre-release, which mise skips
+just = "1.59.0"                             # Modern task runner and command organizer
+jj = "0.46.0"                               # Next-generation Git-compatible VCS with operation log and safety features
+sccache = "0.19.0"                          # Compiler cache optimization
 
-# ── OPTIMIZED TOOLS (Forced Compilation) ──────────────────────────────────
-# Compiled from source with RUSTFLAGS for maximum local performance
-# default-feature is workaround to force cargo build instead of cargo binstall
-"cargo:fd-find" = { version = "10.5.0", default-features = "true" } # Optimized file discovery (fd)
-"cargo:jaq" = { version = "3.1.2", default-features = "true" }      # A robust jq alternative with built-in support for YAML, CBOR, TOML, XML, and CSV/TSV, engineered for strict correctness.
-"cargo:ripgrep" = { version = "15.2.0", default-features = "true" } # Fast line-oriented search tool (rg)
-"cargo:skim" = { version = "5.9.0", default-features = "true" }     # Fuzzy finder written in Rust (sk)
-"cargo:nu" = { version = "0.117.0", default-features = "true" }     # Primary shell used across macOS, Linux, and Windows
-
-# ── Runtimes & Editors (Highly pre-optimized rust binary or not rust binary  )────────────────────────────────────────────────────
-"aqua:fish-shell/fish-shell" = "4.9.3" # Interactive shell used across macOS, Linux, and WSL2
+# ── Runtimes, Shells & Editors ────────────────────────────────────────────
+"aqua:nushell/nushell" = "0.116.1"     # Primary shell on macOS, Linux and Windows (prebuilt). 0.117.0 is hidden by minimum_release_age
+carapace = "1.8.2"                     # External completions for Nushell
+"aqua:fish-shell/fish-shell" = "4.9.3" # Legacy shell, removed when Fish is retired (macOS, Linux)
 deno = "2.9.8"                         # Secure runtime for JavaScript, TypeScript, and JSX
 helix = "25.07.1"                      # Post-modern modal text editor with built-in LSP
 usql = "0.21.6"                        # Universal command-line interface for SQL databases (Postgres, MySQL, SQLite, etc.); GOLANG
@@ -44,23 +42,27 @@ uv = "0.13.6"                          # Python package manager
 yq = "4.54.1"
 
 # ── Shell Productivity and Utilities Tools ────────────────────────────────
-"cargo:atuin" = "18.24.4"                                   # SQLite-backed shell history sync and search
-"cargo:bat" = "0.26.1"                                      # Cat clone with syntax highlighting
-"cargo:bottom" = "0.15.0"                                   # Cross-platform graphical process/system monitor (btm)
-"cargo:eza" = "0.23.5"                                      # Modern replacement for ls
+atuin = "18.24.4"                                           # SQLite-backed shell history sync and search
+bat = "0.26.1"                                              # Cat clone with syntax highlighting
+bottom = "0.15.0"                                           # Cross-platform graphical process/system monitor (btm)
+"cargo:eza" = "0.23.5"                                      # Modern replacement for ls; no macOS release binary
+fd = "10.5.0"                                               # File discovery (fd-find)
+jaq = "3.1.2"                                               # jq alternative with built-in support for YAML, CBOR, TOML, XML, and CSV/TSV
 "github:Feel-ix-343/markdown-oxide" = "0.25.12"             # Markdown LSP
-"cargo:ouch" = "0.8.3"                                      # Painless compression and decompression for any format
-"cargo:rip2" = "0.9.7"                                      # A safer, rust-based rm
-"cargo:sd" = "1.0.0"                                        # Intuitive find and replace (sed alternative)
-"cargo:starship" = "1.27.0"                                 # Minimal, blazing-fast, and infinitely customizable shell prompt
-"cargo:taplo-cli" = "0.10.0"                                # Feature-rich TOML toolkit, linter, and formatter
+"aqua:ouch-org/ouch" = "0.8.3"                              # Painless compression and decompression for any format
+"github:MilesCranmer/rip2" = "0.9.7"                        # A safer, rust-based rm
+ripgrep = "15.2.0"                                          # Fast line-oriented search tool (rg)
+sd = "1.0.0"                                                # Intuitive find and replace (sed alternative)
+skim = "5.9.0"                                              # Fuzzy finder written in Rust (sk)
+starship = "1.27.0"                                         # Minimal, blazing-fast, and infinitely customizable shell prompt
+taplo = "0.10.0"                                            # Feature-rich TOML toolkit, linter, and formatter
 usage = { version = "7.1.5", workflow = "publish-cli.yml" } # Usage is a spec and CLI for defining CLI tools
-"cargo:xh" = "0.26.3"                                       # Fast and user-friendly HTTP client
-"cargo:zoxide" = "0.10.0"                                   # Smart cd command (z)
+xh = "0.26.3"                                               # Fast and user-friendly HTTP client
+zoxide = "0.10.0"                                           # Smart cd command (z)
 
 # ── Secrets & Environment Management ──────────────────────────────────────
-sops = "3.13.3"         # Edit and manage SOPS-encrypted secret files
-"cargo:rage" = "0.12.1" # Modern and secure file encryption tool manage age-compatible identities
+sops = "3.13.3"                    # Edit and manage SOPS-encrypted secret files
+"aqua:str4d/rage" = "0.12.1"       # Modern and secure file encryption tool manage age-compatible identities
 
 #Lang
 python = "3.15.2" #Python interpreter
