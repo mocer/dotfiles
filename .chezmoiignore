@@ -16,6 +16,9 @@ claude-code-with-bedrock
 .config/mise/conf.d/mobile.toml
 {{ end -}}
 
+# Handoff for agent
+docs/
+
 # Repository-only files
 README.md
 justfile

@@ -33,6 +33,7 @@ gh = "2.103.3" # Github CLI; GOLANG
 "cargo:jaq" = { version = "3.1.2", default-features = "true" }      # A robust jq alternative with built-in support for YAML, CBOR, TOML, XML, and CSV/TSV, engineered for strict correctness.
 "cargo:ripgrep" = { version = "15.2.0", default-features = "true" } # Fast line-oriented search tool (rg)
 "cargo:skim" = { version = "5.9.0", default-features = "true" }     # Fuzzy finder written in Rust (sk)
+"cargo:nu" = { version = "0.117.0", default-features = "true" }     # Primary shell used across macOS, Linux, and Windows
 
 # ── Runtimes & Editors (Highly pre-optimized rust binary or not rust binary  )────────────────────────────────────────────────────
 "aqua:fish-shell/fish-shell" = "4.9.3" # Interactive shell used across macOS, Linux, and WSL2
