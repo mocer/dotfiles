@@ -11,11 +11,6 @@
 # - cargo_jobs is optional and can be set per machine in the local
 #   ~/.config/chezmoi/chezmoi.toml file under [data].
 
-[registries]
-# Use Cargo's sparse registry protocol to avoid downloading the full crates.io
-# index and reduce registry update overhead.
-registries.crates-io.protocol = "sparse"
-
 [build]
 # Limit parallel compilation only when an explicit per-machine policy exists.
 # If cargo_jobs is absent, this setting is omitted and Cargo selects its normal
