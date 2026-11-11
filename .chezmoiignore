@@ -36,9 +36,6 @@ AppData
 .config/fish
 {{ end -}}
 
-# Handoff for agent
-docs/
-
 # Repository-only files
 README.md
 justfile
