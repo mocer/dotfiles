@@ -1,5 +1,5 @@
 # Personal commands, ported from ~/.config/fish/functions.
-# Managed by chezmoi: edit dot_config/nushell/autoload/functions.nu.
+# Managed by chezmoi: edit .chezmoitemplates/nushell/autoload/functions.nu.
 #
 # skim runs --preview commands through a shell: the preview strings below
 # are valid in both sh and Nushell on purpose (no redirections, no `&&`).

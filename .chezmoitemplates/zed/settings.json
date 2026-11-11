@@ -14,7 +14,7 @@
 {{- $poste := has "poste" .profiles -}}
 {{- $b := .bedrock -}}
 {{- $bedrock := and $poste (get $b "opus_arn") (get $b "sonnet_arn") (get $b "haiku_arn") -}}
-// Zed settings — managed by chezmoi, edit the template instead.
+// Zed settings — managed by chezmoi: edit .chezmoitemplates/zed/settings.json.
 //
 // To see all of Zed's default settings without changing your
 // custom settings, run `zed: open default settings` from the

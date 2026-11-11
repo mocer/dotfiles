@@ -1,5 +1,5 @@
 # Nushell interactive configuration.
-# Managed by chezmoi: edit dot_config/nushell/config.nu in the dotfiles repository.
+# Managed by chezmoi: edit .chezmoitemplates/nushell/config.nu in the dotfiles repository.
 #
 # Load order: env.nu → config.nu → vendor autoload → autoload/ (this directory).
 # - vendor autoload ($nu.data-dir/vendor/autoload) holds the generated tool
@@ -53,4 +53,4 @@ alias jn  = jj new
 alias js  = jj squash
 alias jgp = jj git push
 
-print "Hi Mocer, may the force be with you!"
+if $nu.is-interactive { print "Hi Mocer, may the force be with you!" }

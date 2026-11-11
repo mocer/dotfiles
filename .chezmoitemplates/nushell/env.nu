@@ -9,9 +9,7 @@
 {{- $home := .chezmoi.homeDir -}}
 {{- $shims := ternary (joinPath (env "LOCALAPPDATA") "mise" "shims") (joinPath $home ".local" "share" "mise" "shims") $win -}}
 {{- $cargoConfig := joinPath $home ".cargo" "config.toml" -}}
-{{- $ghrRoot := get . "ghr_root" | default "~/Repos" -}}
-{{- if hasPrefix "~/" $ghrRoot }}{{ $ghrRoot = joinPath $home (trimPrefix "~/" $ghrRoot) }}{{ end -}}
-# Managed by chezmoi: edit env.nu.tmpl in the dotfiles repository.
+# Managed by chezmoi: edit .chezmoitemplates/nushell/env.nu in the dotfiles repository.
 
 use std/util "path add"
 
@@ -25,6 +23,7 @@ let user_paths = [
     {{ joinPath $home ".local" "bin" | toJson }}
     {{ joinPath $home ".cargo" "bin" | toJson }}
 {{- if eq .chezmoi.os "darwin" }}
+    {{- /* OrbStack ships no Nushell init: only its bin directory is needed. */}}
     {{ joinPath $home ".orbstack" "bin" | toJson }}
     "/opt/local/bin"
     "/usr/local/bin"
@@ -50,7 +49,7 @@ if ({{ $cargoConfig | toJson }} | path exists) {
 }
 
 # ── Tools ────────────────────────────────────────────────────────────
-$env.GHR_ROOT = {{ $ghrRoot | toJson }}
+$env.GHR_ROOT = {{ .ghr_root | replace "~" .chezmoi.homeDir | toJson }}
 $env._ZO_FZF_OPTS = ""
 $env._ZOXIDE_FZF_CMD = "sk --height 40% --layout=reverse --border rounded"
 {{- if not $win }}
