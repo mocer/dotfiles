@@ -1,3 +1,4 @@
+{{- $nuPaths := includeTemplate "nu-paths" . | fromJson -}}
 # =============================================================================
 # NOTE: Helix does NOT support standalone linters. Linting must be handled
 #       through the Language Server Protocol (LSP) for each language.
@@ -79,3 +80,7 @@ language-servers = ["yaml-lsp"]
 [language-server.yaml-lsp]
 command = "yaml-lsp"
 args = ["--stdio"]
+
+[language-server.nu-lsp]
+command = {{ $nuPaths.nu | toJson }}
+args = ["--config", {{ $nuPaths.lsp | toJson }}, "--lsp"]

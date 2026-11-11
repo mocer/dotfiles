@@ -3,12 +3,9 @@ theme = "dark_plus"
 [editor]
 true-color = true
 line-number = "relative"
-# Use the stable mise shim instead of a package-manager-specific Fish path.
-# The shim resolves the Fish version configured globally through mise.
-shell = [
-"{{ .chezmoi.homeDir }}/.local/bin/fish",
-"-c",
-]
+# Stable Nushell path maintained by scripts/refresh-links.nu (not a versioned
+# mise install path, not a shim).
+shell = [{{ (includeTemplate "nu-paths" . | fromJson).nu | toJson }}, "-c"]
 bufferline = "multiple"
 
 [editor.soft-wrap]

@@ -13,6 +13,7 @@
 */ -}}
 {{- $poste := has "poste" .profiles -}}
 {{- $b := .bedrock -}}
+{{- $nuPaths := includeTemplate "nu-paths" . | fromJson -}}
 {{- $bedrock := and $poste (get $b "opus_arn") (get $b "sonnet_arn") (get $b "haiku_arn") -}}
 // Zed settings — managed by chezmoi: edit .chezmoitemplates/zed/settings.json.
 //
@@ -37,13 +38,11 @@
     "enterprise_uri": "https://posteitaliane.ghe.com",
   },
 {{- end }}
-{{- if ne .chezmoi.os "windows" }}
   "terminal": {
     "shell": {
-      "program": {{ joinPath .chezmoi.homeDir ".local" "bin" "fish" | toJson }},
+      "program": {{ $nuPaths.nu | toJson }},
     },
   },
-{{- end }}
   "outline_panel": {
     "dock": "left",
   },
@@ -116,6 +115,12 @@
   },
 {{- end }}
   "lsp": {
+    "nu": {
+      "binary": {
+        "path": {{ $nuPaths.nu | toJson }},
+        "arguments": ["--config", {{ $nuPaths.lsp | toJson }}, "--lsp"],
+      },
+    },
     "rust-analyzer": {
       "binary": {
         "env": {

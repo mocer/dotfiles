@@ -1,0 +1,9 @@
+{{- $dir := ternary "AppData/Roaming/alacritty/themes" ".config/alacritty/themes" (eq .chezmoi.os "windows") }}
+# Alacritty color schemes, cloned with Git and refreshed weekly.
+[{{ $dir | quote }}]
+type = "git-repo"
+url = "https://github.com/alacritty/alacritty-theme.git"
+refreshPeriod = "168h"
+
+[{{ $dir | quote }}.pull]
+args = ["--ff-only"]

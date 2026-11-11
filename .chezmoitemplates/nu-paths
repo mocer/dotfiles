@@ -1,0 +1,16 @@
+{{- /*
+  Stable Nushell binary and lsp.nu path for the current OS, as JSON.
+  Usage: {{ $p := includeTemplate "nu-paths" . | fromJson }}  ->  $p.nu, $p.lsp, $p.alacrittyDir
+  The Nushell and Alacritty config directories follow the Phase 3 table.
+*/ -}}
+{{- $home := .chezmoi.homeDir -}}
+{{- $nu := joinPath $home ".local" "bin" (ternary "nu.exe" "nu" (eq .chezmoi.os "windows")) -}}
+{{- $nuDir := joinPath $home ".config" "nushell" -}}
+{{- $alacrittyDir := joinPath $home ".config" "alacritty" -}}
+{{- if eq .chezmoi.os "darwin" -}}
+{{-   $nuDir = joinPath $home "Library" "Application Support" "nushell" -}}
+{{- else if eq .chezmoi.os "windows" -}}
+{{-   $nuDir = joinPath $home "AppData" "Roaming" "nushell" -}}
+{{-   $alacrittyDir = joinPath $home "AppData" "Roaming" "alacritty" -}}
+{{- end -}}
+{{- dict "nu" $nu "lsp" (joinPath $nuDir "lsp.nu") "alacrittyDir" $alacrittyDir | toJson -}}
