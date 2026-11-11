@@ -105,6 +105,7 @@ Decisions already taken with the user. Do not revisit them.
 | Rust | Managed by rustup only; never declared in mise. `rust-analyzer` is a manual README step. |
 | Alacritty themes | chezmoi external `git-repo` clone of `alacritty-theme`. |
 | Login shell | OS default (zsh, bash, PowerShell). Nushell is never the login shell. |
+| Git ignore | No repository `.gitignore`: `core.excludesFile` points to `dot_config/git/ignore`. |
 | Fish | `dot_config/private_fish/` untouched until the user explicitly asks for Phase 12. |
 | sccache | Stable link `~/.local/bin/sccache`; `dot_config/sccache/config.tmpl` is deleted. |
 
@@ -122,8 +123,9 @@ with CRLF breaks on Unix.
    *.age binary
    ```
 2. `dot_config/mise/.DS_Store` is tracked by mistake: `git rm --cached` it,
-   and add `.DS_Store` to `.gitignore` and to `.chezmoiignore`.
-3. Add `.gitattributes`, `.gitignore`, and `docs/**` to the
+   and add `.DS_Store` to `.chezmoiignore`; Git ignores it through the
+   global excludes file (`dot_config/git/ignore`).
+3. Add `.gitattributes` and `docs/**` to the
    "Repository-only files" block of `.chezmoiignore`.
 4. Run `git add --renormalize .` and commit on its own.
 

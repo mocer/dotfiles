@@ -25,6 +25,9 @@
   // Claude Code through ACP: reads ~/.claude/settings.json (Bedrock + ARNs).
   "agent_servers": {
     "claude-acp": {
+      "default_config_options": {
+        "model": {{ $b.default_model | toJson }}
+      },
       "type": "registry",
     },
   },
