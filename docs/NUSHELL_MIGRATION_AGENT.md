@@ -102,6 +102,7 @@ Decisions already taken with the user. Do not revisit them.
 | minimum_release_age | Never bypassed. If a pinned version is not yet installable, keep the pin and report it. |
 | Versions | Every tool pinned to an explicit version; no `latest`. |
 | mise | Standalone binary in `~/.local/bin`, upgraded with `mise self-update`. `self_update.auto` stays off. |
+| Upgrade guard | `just upgrade` stops if `chezmoi status ~/.config/mise` is not empty: re-add must never overwrite unapplied source changes. |
 | chezmoi | Standalone binary in `~/.local/bin`, upgraded with `chezmoi upgrade` by `just upgrade`. |
 | Rust | Managed by rustup only; never declared in mise. `rust-analyzer` is a manual README step. |
 | Alacritty themes | chezmoi external `git-repo` clone of `alacritty-theme`. |
@@ -511,23 +512,30 @@ Order:
 1. `mise self-update -y`; on failure print a warning and continue.
 2. `chezmoi upgrade`; on failure print a warning and continue (package-manager
    installs refuse self-upgrade).
-3. Upgrade every configured tool except `HELD`: read the configured tool
+3. **Guard** (`scripts/mise-guard.nu`, shared with `upgrade-nu.nu`):
+   `chezmoi status ~/.config/mise` must be empty. Otherwise stop with a
+   non-zero exit, list the paths, and explain both cases: source changed, not
+   applied (`chezmoi apply ~/.config/mise`); home changed, not re-added
+   (`chezmoi re-add ~/.config/mise`). Point to `chezmoi diff ~/.config/mise`.
+   Never fix it automatically.
+4. Upgrade every configured tool except `HELD`: read the configured tool
    names (`mise ls --current --json`), remove `HELD`, pass the rest to
    `mise upgrade --bump`. Confirm the JSON keys match the identifiers
    `mise upgrade` accepts; if not, report and propose an alternative.
-4. `chezmoi re-add ~/.config/mise`.
-5. `chezmoi apply`: the `run_onchange` scripts (mise install, refresh-links,
+5. `chezmoi re-add ~/.config/mise`.
+6. `chezmoi apply`: the `run_onchange` scripts (mise install, refresh-links,
    nushell-init) re-run because the mise config hash changed. `upgrade.nu`
    does not call them directly, nor `mise reshim` (`mise install` maintains
    the shims).
-6. `rustup update`.
-7. `uv tool upgrade --all`.
-8. Print `git -C <source> status --short`, so the user sees what to commit.
+7. `rustup update`.
+8. `uv tool upgrade --all`.
+9. Print `git -C <source> status --short`, so the user sees what to commit.
 
 Do not upgrade Zed, Alacritty, or Git: they are prerequisites.
 
 ### `scripts/upgrade-nu.nu <version>`
 
+0. Run the same guard as `upgrade.nu` before changing anything.
 1. Save the current Nushell version from `config.toml`.
 2. Set `"aqua:nushell/nushell"` to `<version>`; `mise install`.
 3. Check every repository `.nu` file with `nu --ide-check 100 <file>`, then

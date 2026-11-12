@@ -9,6 +9,7 @@
 # mise configuration hash changed.
 
 use std/util "path add"
+use mise-guard.nu check-mise-config
 
 const HELD = ["aqua:nushell/nushell"]
 
@@ -25,6 +26,9 @@ def main [] {
     warn-on-failure "chezmoi upgrade failed (package-manager installs refuse self-upgrade), continuing" {
         ^chezmoi upgrade | complete
     }
+
+    step "check that the mise configuration is in sync"
+    check-mise-config
 
     step "mise upgrade --bump (except held tools)"
     # Names from `mise ls --current` are the identifiers `mise upgrade` accepts.

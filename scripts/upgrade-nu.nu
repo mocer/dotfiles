@@ -7,6 +7,7 @@
 # Usage: nu scripts/upgrade-nu.nu <version>
 
 use std/util "path add"
+use mise-guard.nu check-mise-config
 
 const NU_TOOL = "aqua:nushell/nushell"
 const SCRIPTS = path self | path dirname
@@ -25,6 +26,9 @@ def main [version: string] {
         print $"Nushell is already pinned to ($version)."
         return
     }
+
+    # `chezmoi re-add` at the end must not overwrite unapplied source changes.
+    check-mise-config
 
     print $"==> Nushell ($previous) -> ($version)"
     try {
