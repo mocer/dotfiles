@@ -2,13 +2,113 @@ Personal configuration files managed with [chezmoi](https://chezmoi.io),
 targeting multiple OS. Profiles for multiple identities (personal and work) are
 handled transparently via [ghr](https://github.com/nicholasgasior/ghr).
 
-## Quick Start
+## Before the first `chezmoi apply`
 
-On a new machine:
+The dotfiles never install or upgrade these prerequisites. Everything else,
+Nushell included, is installed by mise. macOS, Linux, and Windows are
+supported natively (no WSL).
 
-```fish
-chezmoi init --apply https://github.com/mocer/dotfiles
+### 1. Prerequisites
+
+| Prerequisite         | Notes                                                       |
+| -------------------- | ----------------------------------------------------------- |
+| Git                  |                                                             |
+| Rust ([rustup])      | on Windows, rustup requires the MSVC Build Tools            |
+| chezmoi              | step 2                                                      |
+| mise                 | step 2                                                      |
+| Zed, Alacritty       | [zed.dev](https://zed.dev), [alacritty.org](https://alacritty.org) |
+| FiraCode Nerd Font   | step 3                                                      |
+| age key              | step 5                                                      |
+
+[rustup]: https://rustup.rs
+
+On Windows, install the MSVC Build Tools (Visual Studio Build Tools, "Desktop
+development with C++") before running rustup.
+
+### 2. mise and chezmoi in `~/.local/bin`
+
+mise as the standalone release binary, chezmoi next to it
+(`%USERPROFILE%\.local\bin` on Windows):
+
+```sh
+# macOS, Linux
+curl -fsSL https://mise.run | sh
+sh -c "$(curl -fsLS https://get.chezmoi.io/lb)" -- -b ~/.local/bin
 ```
+
+```powershell
+# Windows (PowerShell)
+irm https://mise.run/powershell | iex
+iex "&{$(irm 'https://get.chezmoi.io/ps1')} -b '$HOME\.local\bin'"
+```
+
+Make sure `~/.local/bin` is on `PATH` in the current session. On Windows the
+mise installer adds it to the user `Path`; the apply scripts also add it.
+
+### 3. FiraCode Nerd Font
+
+- **macOS:** `brew install --cask font-fira-code-nerd-font`
+- **Linux:** download `FiraCode.zip` from the
+  [Nerd Fonts releases](https://github.com/ryanoasis/nerd-fonts/releases),
+  extract into `~/.local/share/fonts`, run `fc-cache -f`.
+- **Windows:** download the same `FiraCode.zip`, select the `.ttf` files,
+  right-click, "Install for all users" or "Install".
+
+### 4. Rust editor component
+
+```sh
+rustup component add rust-analyzer
+```
+
+rustup's default profile does not include it. Repeat for every new toolchain.
+
+### 5. age key (profile `poste`)
+
+Place the key at `~/.config/chezmoi/key.txt`. It is required to decrypt the
+`*.age` files.
+
+### 6. Apply
+
+- **New machine:** `chezmoi init --apply https://github.com/mocer/dotfiles`
+- **Existing machine, after the Nushell migration:** run `chezmoi init` once
+  (it adds the Windows interpreter for `.nu` scripts), then `chezmoi apply`.
+
+### 7. Login shell
+
+Confirm the login shell is the OS default: zsh on macOS, bash on Linux,
+PowerShell on Windows. Nushell is never the login shell; Alacritty, Zed, and
+Helix start it explicitly. On macOS and Linux chezmoi manages a minimal login
+profile (`~/.zprofile`, `~/.profile`) that puts the mise shims, `~/.local/bin`,
+and `~/.cargo/bin` on `PATH` for GUI applications.
+
+### Scripts
+
+chezmoi runs these automatically after `apply`, only when their inputs change:
+
+| Script                    | What it does                                            |
+| ------------------------- | ------------------------------------------------------- |
+| `00-mise-install`         | two-pass install (below); on Windows also sets user PATH |
+| `10-refresh-links`        | `scripts/refresh-links.nu`: stable links in `~/.local/bin` |
+| `20-nushell-init`         | `scripts/nushell-init.nu`: Nushell vendor autoload files |
+| `50-mobile-rust-targets`  | `rustup target add` (profile `mobile` only)             |
+
+Two-pass install: first a blocking bootstrap (`nu`, `cargo-binstall`), so
+later scripts have Nushell; then a non-blocking `mise install` of everything
+else. If a tool fails in the second pass, a warning names it, the remaining
+scripts still run, and `just doctor` reports what is missing.
+
+Maintenance recipes (run from the source directory, through Nushell):
+
+| Recipe                    | What it does                                            |
+| ------------------------- | ------------------------------------------------------- |
+| `just doctor`             | verify tools, links, and the pinned Nushell version     |
+| `just refresh-links`      | refresh the stable `~/.local/bin` links                 |
+| `just nushell-init`       | regenerate the Nushell vendor autoload files            |
+| `just upgrade`            | upgrade mise, chezmoi, tools, Rust, and uv tools; stops if `chezmoi status ~/.config/mise` is not empty |
+| `just upgrade-nu <ver>`   | move Nushell to `<ver>`; restores the old version if a check fails |
+
+Nushell is held at the version pinned in `config.toml`: `just upgrade` never
+bumps it, only `just upgrade-nu` does.
 
 ## Managed Tools
 
