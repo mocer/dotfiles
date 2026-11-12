@@ -1,12 +1,39 @@
-Personal configuration files managed with [chezmoi](https://chezmoi.io),
-targeting multiple OS. Profiles for multiple identities (personal and work) are
-handled transparently via [ghr](https://github.com/nicholasgasior/ghr).
+# dotfiles
+
+Personal configuration managed with [chezmoi](https://chezmoi.io). One source
+tree works natively on **macOS, Linux, and Windows** (no WSL).
+
+- **Nushell** is the interactive shell everywhere. The login shell stays the
+  OS default (zsh, bash, PowerShell).
+- **mise** installs and pins every CLI tool, Nushell included.
+- **rustup** owns the Rust toolchain.
+- **just** + Nushell scripts provide the maintenance tasks.
+
+| Owner     | Responsibility                                       |
+| --------- | ---------------------------------------------------- |
+| chezmoi   | files, templates, externals, run scripts             |
+| mise      | CLI tools and their versions                         |
+| rustup    | Rust toolchain and components                        |
+| Nushell   | interactive shell, personal commands, maintenance scripts |
+| just      | entry points for maintenance tasks                   |
+| OS shell  | login shell (zsh, bash, PowerShell)                  |
+
+## Contents
+
+- [Before the first `chezmoi apply`](#before-the-first-chezmoi-apply)
+- [Profiles](#profiles)
+- [Scripts and recipes](#scripts-and-recipes)
+- [What is managed](#what-is-managed)
+- [Tools](#tools)
+- [Nushell](#nushell)
+- [Daily workflow](#daily-workflow)
+- [Repository layout](#repository-layout)
+- [Secrets](#secrets)
 
 ## Before the first `chezmoi apply`
 
 The dotfiles never install or upgrade these prerequisites. Everything else,
-Nushell included, is installed by mise. macOS, Linux, and Windows are
-supported natively (no WSL).
+Nushell included, is installed by mise.
 
 ### 1. Prerequisites
 
@@ -76,6 +103,10 @@ Place the key at `~/.config/chezmoi/key.txt`. It is required to decrypt the
 - **Existing machine, after the Nushell migration:** run `chezmoi init` once
   (it adds the Windows interpreter for `.nu` scripts), then `chezmoi apply`.
 
+`chezmoi init` asks once for the [profiles](#profiles) of the machine and, with
+`poste`, for the Bedrock inference profile ARNs (empty to skip). Answers are
+stored in `~/.config/chezmoi/chezmoi.toml` and reused on every later `init`.
+
 ### 7. Login shell
 
 Confirm the login shell is the OS default: zsh on macOS, bash on Linux,
@@ -84,7 +115,35 @@ Helix start it explicitly. On macOS and Linux chezmoi manages a minimal login
 profile (`~/.zprofile`, `~/.profile`) that puts the mise shims, `~/.local/bin`,
 and `~/.cargo/bin` on `PATH` for GUI applications.
 
-### Scripts
+### Not managed
+
+SSH keys and `~/.ssh/allowed_signers` are not in this repository. Git signs
+commits with SSH and expects `~/.ssh/id_ed25519_developer.pub` and
+`~/.ssh/allowed_signers` to exist.
+
+## Profiles
+
+Machine roles, chosen at `chezmoi init` and gated by `.chezmoiignore`. A
+machine with no profile gets the base configuration.
+
+| Profile  | Adds                                                                 |
+| -------- | -------------------------------------------------------------------- |
+| `poste`  | work tools (`conf.d/poste.toml`: `kcli`, OpenShift `oc`), AWS config and Claude Code on Amazon Bedrock, Bedrock and GitHub Enterprise Copilot in Zed, the encrypted `claude-code-with-bedrock` config |
+| `mobile` | `conf.d/mobile.toml` (`cargo-ndk`, Java Temurin 21) and the Rust mobile targets (`rustup target add`) |
+
+The Bedrock files (`~/.claude/settings.json`, the Zed Bedrock blocks) render
+only when all three ARNs are set.
+
+Machine-local overrides go under `[data]` in `~/.config/chezmoi/chezmoi.toml`:
+
+```toml
+[data]
+cargo_jobs = 8               # default: Cargo's own choice
+sccache_cache_size = "20G"   # default: 50G
+ghr_root = "~/Repos"         # default: ~/Repos
+```
+
+## Scripts and recipes
 
 chezmoi runs these automatically after `apply`, only when their inputs change:
 
@@ -111,83 +170,114 @@ Maintenance recipes (run from the source directory, through Nushell):
 | `just upgrade-nu <ver>`   | move Nushell to `<ver>`; restores the old version if a check fails |
 
 Nushell is held at the version pinned in `config.toml`: `just upgrade` never
-bumps it, only `just upgrade-nu` does.
+bumps it, only `just upgrade-nu` does. From any directory, `system_upgrade`
+(Nushell command) runs `just upgrade` on the source directory.
 
-## Managed Tools
+`just upgrade` in order: `mise self-update`, `chezmoi upgrade`, the mise
+config guard, `mise upgrade --bump` (Nushell excluded), `chezmoi re-add
+~/.config/mise`, `chezmoi apply`, `rustup update`, `uv tool upgrade --all`.
+It ends with `git status --short` of the source directory: commit the bumped
+versions yourself.
 
-### Shell
+### Stable links
 
-| Tool                                            | Description                                            |
-| ----------------------------------------------- | ------------------------------------------------------ |
-| [Fish](https://fishshell.com)                   | Primary shell — PATH, env vars, aliases, abbreviations |
-| [Starship](https://starship.rs)                 | Minimal, fast cross-shell prompt                       |
-| [Atuin](https://atuin.sh)                       | SQLite-backed shell history sync and search            |
-| [Zoxide](https://github.com/ajeetdsouza/zoxide) | Smart `cd` replacement                                 |
-| [Direnv](https://direnv.net)                    | Per-directory environment variable management          |
+Native applications (Alacritty, Zed, Cargo) do not see the environment
+activated by mise. They use stable links in `~/.local/bin` instead of
+versioned install paths: `nu`, `deno`, `sccache`. Symbolic links on macOS and
+Linux, hard links (`.exe`) on Windows, refreshed after every install.
 
-### Version Control
+## What is managed
 
-| Tool                                         | Description                                       |
-| -------------------------------------------- | ------------------------------------------------- |
-| [Git](https://git-scm.com)                   | Global config, SSH signing, allowed signers       |
-| [gh](https://cli.github.com)                 | GitHub CLI configuration                          |
-| [ghr](https://github.com/nicholasgasior/ghr) | Multi-profile and multi-host Git identity manager |
-| [jj](https://martinvonz.github.io/jj)        | Jujutsu — next-generation Git-compatible VCS      |
-| SSH                                          | `~/.ssh/config`, public keys, `allowed_signers`   |
+Per-OS locations come from one shared template in `.chezmoitemplates/`,
+rendered to the path each OS expects.
 
-### Development Environment
+| Config          | macOS                                 | Linux                | Windows                       |
+| --------------- | ------------------------------------- | -------------------- | ----------------------------- |
+| Nushell         | `~/Library/Application Support/nushell` | `~/.config/nushell` | `%APPDATA%\nushell`           |
+| Alacritty       | `~/.config/alacritty`                 | `~/.config/alacritty` | `%APPDATA%\alacritty`        |
+| Zed             | `~/.config/zed`                       | `~/.config/zed`      | `%APPDATA%\Zed`               |
+| Helix           | `~/.config/helix`                     | `~/.config/helix`    | `%APPDATA%\helix`             |
+| GitHub CLI      | `~/.config/gh`                        | `~/.config/gh`       | `%APPDATA%\GitHub CLI`        |
+| mpv             | `~/.config/mpv`                       | `~/.config/mpv`      | `%APPDATA%\mpv`               |
+| Login profile   | `~/.zprofile`                         | `~/.profile`         | —                             |
 
-| Tool                                            | Description                                     |
-| ----------------------------------------------- | ----------------------------------------------- |
-| [mise](https://mise.jdx.dev)                    | Polyglot runtime and tool version manager       |
-| [Cargo / Rust](https://doc.rust-lang.org/cargo) | Sparse registry, sccache wrapper, target triple |
-| [sccache](https://github.com/mozilla/sccache)   | Compiler cache — path and size configuration    |
-| [rustup](https://rustup.rs)                     | Rust toolchain manager settings                 |
-| [uv](https://github.com/astral-sh/uv)           | Fast Python package and project manager         |
-| [Deno](https://deno.com)                        | Secure TypeScript/JavaScript runtime            |
+Same path on every OS:
 
-### Editors
+| File                         | Content                                                  |
+| ---------------------------- | -------------------------------------------------------- |
+| `~/.config/mise/`            | tool versions: `config.toml` and `conf.d/*.toml`         |
+| `~/.cargo/config.toml`       | sccache wrapper (stable link), shared `target-dir`, optional `jobs`, `SCCACHE_*` env |
+| `~/.gitconfig`               | identity fallback, SSH commit signing, global ignore     |
+| `~/.config/git/ignore`       | global Git ignore (OS metadata, editor backups, local env files) |
+| `~/Repos/ghr.toml`           | [ghr] profiles: Git identity per host                    |
+| `~/.config/starship.toml`    | prompt                                                   |
+| `~/.config/atuin/config.toml`| shell history                                            |
+| `~/.config/alacritty/themes` | [alacritty-theme] clone (chezmoi external, refreshed weekly) |
+| `~/.aws/config`, `~/.claude/settings.json` | profile `poste` only                       |
 
-| Tool                              | Description                                         |
-| --------------------------------- | --------------------------------------------------- |
-| [Helix](https://helix-editor.com) | Modal editor — keybindings, theme, language servers |
-| [Zed](https://zed.dev)            | High-performance collaborative editor               |
+[ghr]: https://github.com/siketyan/ghr
+[alacritty-theme]: https://github.com/alacritty/alacritty-theme
 
-### Terminal
+Fish (`~/.config/fish`) is still deployed on macOS and Linux as a legacy
+configuration and will be removed.
 
-| Tool                                             | Description                                              |
-| ------------------------------------------------ | -------------------------------------------------------- |
-| [Alacritty](https://alacritty.org)               | GPU-accelerated terminal emulator                        |
-| [bat](https://github.com/sharkdp/bat)            | `cat` replacement with syntax highlighting and man pager |
-| [eza](https://eza.rocks)                         | Modern `ls` replacement                                  |
-| [bottom](https://github.com/ClementTsang/bottom) | Cross-platform graphical process monitor                 |
+## Tools
 
-### Productivity & Search
+Tools are pinned to explicit versions in `dot_config/mise/config.toml`
+(always applied), `conf.d/cargo.toml` (always applied), or a profile file.
+Exceptions still on `latest`: `just-lsp`, `ruff`, `ty`,
+`docker-language-server`.
+Backend policy: registry short name or `aqua:`/`github:` first; `cargo:` only
+for crates without release binaries for macOS, Linux, and Windows. Those live
+in `conf.d/cargo.toml` and are installed by cargo-binstall, or built from
+source when no binary exists.
 
-| Tool                                             | Description                                       |
-| ------------------------------------------------ | ------------------------------------------------- |
-| [ripgrep](https://github.com/BurntSushi/ripgrep) | Fast line-oriented search                         |
-| [fd](https://github.com/sharkdp/fd)              | Fast and user-friendly `find` alternative         |
-| [skim](https://github.com/lotabout/skim)         | Fuzzy finder — used by `repo` function and zoxide |
-| [just](https://just.systems)                     | Command runner and task organizer                 |
+| Area                 | Tools                                                           |
+| -------------------- | --------------------------------------------------------------- |
+| Shell                | Nushell, carapace, starship, atuin, zoxide                      |
+| Editors and LSPs     | Helix, taplo, markdown-oxide, just-lsp, ruff, ty, docker-language-server |
+| Version control      | gh, jj, ghr                                                     |
+| Rust workflow        | cargo-binstall, sccache, cargo-nextest, cargo-watch, cargo-audit, cargo-deny, cargo-machete, cargo-about, tarpaulin, cargo-edit, cargo-expand, cargo-cache, sqlx-cli |
+| Runtimes             | Deno, Python, uv                                                |
+| CLI utilities        | bat, eza, fd, ripgrep, sd, skim, bottom, jaq, yq, xh, ouch, rip2, tokei, hyperfine, grex, git-cliff, usql, usage |
+| Task runner          | just                                                            |
+| Secrets              | rage, sops                                                      |
 
-### Secrets & Security
+Rust itself (and `rust-analyzer`) comes from rustup, never from mise. Zed,
+Alacritty, and Git are prerequisites and are not upgraded by the dotfiles.
 
-| Tool                                  | Description                         |
-| ------------------------------------- | ----------------------------------- |
-| [rage](https://github.com/str4d/rage) | Modern file encryption (age format) |
+## Nushell
 
-> **Note:** Private SSH keys and OAuth tokens are never committed to this
-> repository. Sensitive files are either encrypted via `chezmoi add --encrypt`
-> or excluded entirely.
+Load order: `env.nu` → `config.nu` → vendor autoload → `autoload/`.
 
-## Daily Workflow
+- `env.nu`: `PATH` (mise shims, `~/.local/bin`, `~/.cargo/bin`, plus OrbStack
+  on macOS), `SCCACHE_*` mirrored from `~/.cargo/config.toml`, `GHR_ROOT`,
+  locale.
+- `config.nu`: settings and aliases (`l`/`ll`/`la`/`lt` for eza, `cat` for
+  bat, Cargo `cb`/`ct`/`cw`/…, chezmoi `cza`/`czd`/`czr`/`czs`/…, Jujutsu
+  `jl`/`jd`/`jn`/…). `ls` stays the structured built-in.
+- Vendor autoload (`$nu.data-dir/vendor/autoload`): mise, starship, zoxide,
+  atuin, carapace. Generated by `just nushell-init`, not at every start.
+- `autoload/functions.nu`: personal commands.
 
-```fish
+| Command                | What it does                                              |
+| ---------------------- | --------------------------------------------------------- |
+| `repo [query]`         | fuzzy-pick a ghr repository and `cd` into it              |
+| `skh [dir]`, `skz [dir]` | fuzzy-pick a file and open it in Helix / Zed            |
+| `skdc`, `skcc`         | fuzzy-open a file from the chezmoi source / `~/.config`   |
+| `skrg <pattern>`       | ripgrep, pick a match, open it in Helix at that line      |
+| `repo-dump`            | dump the text files of the current repository into one file |
+| `system_upgrade`       | run `just upgrade` on the dotfiles                        |
+
+`lsp.nu` is the Nushell language server entry point used by Helix and Zed.
+
+## Daily workflow
+
+```nu
 # after editing a real file
 chezmoi re-add <file>
 
-# after editing the source directly
+# after editing the source
 chezmoi edit <file>
 chezmoi apply
 
@@ -195,35 +285,48 @@ chezmoi apply
 chezmoi diff
 chezmoi status
 
-# commit changes (repo lives in ~/Repos/github.com/mocer/dotfiles)
+# upgrade everything (Nushell held)
+system_upgrade
+
+# commit (source lives in ~/Repos/github.com/mocer/dotfiles)
 repo dotfiles
-git add . && git commit -m "..." && git push
+git add .; git commit -m "..."; git push
 ```
 
-## Structure
+Zed rewrites its settings file when settings change from the UI: run
+`chezmoi diff` and bring the changes back into
+`.chezmoitemplates/zed/settings.json`.
+
+## Repository layout
 
 ```
-~/.local/share/chezmoi/   # or ~/Repos/github.com/mocer/dotfiles
-├── dot_gitconfig
-├── dot_config/
-│   ├── fish/
-│   ├── helix/
-│   ├── mise/
-│   ├── cargo/
-│   ├── atuin/
-│   ├── zed/
-│   ├── alacritty/
-│   ├── uv/
-│   └── gh/
-├── dot_ssh/
-│   ├── config
-│   └── allowed_signers
-└── Repos/
-    └── ghr.toml
+.
+├── .chezmoi.toml.tmpl          # init prompts (profiles, Bedrock ARNs), age, Windows nu interpreter
+├── .chezmoidata.toml           # shared defaults (locale, sccache size, ghr root, profiles)
+├── .chezmoidata/               # bedrock.toml, mpv.toml
+├── .chezmoiexternal.toml.tmpl  # alacritty-theme clone
+├── .chezmoiignore              # profile and per-OS gating
+├── .chezmoiscripts/            # run_onchange install, links, Nushell init, mobile targets
+├── .chezmoitemplates/          # shared templates: nushell, alacritty, zed, helix, gh, mpv, helpers
+├── AppData/Roaming/            # Windows targets (include the shared templates)
+├── Library/Application Support/# macOS Nushell target
+├── dot_config/                 # ~/.config: mise, nushell, alacritty, zed, helix, gh, mpv, git, atuin, starship
+├── dot_cargo/                  # ~/.cargo/config.toml
+├── dot_aws/, dot_claude/       # profile poste
+├── claude-code-with-bedrock/   # encrypted company config (profile poste)
+├── Repos/ghr.toml              # ghr profiles
+├── dot_gitconfig, dot_zprofile, dot_profile
+├── scripts/                    # Nushell maintenance scripts (not deployed)
+├── justfile                    # maintenance recipes (not deployed)
+└── docs/                       # migration runbook (not deployed)
 ```
 
-## Platform
+`scripts/`, `justfile`, `docs/`, and `README.md` stay in the source directory
+and are never deployed.
 
-Primarily targeting **macOS (Apple Silicon)**. Templates use `.chezmoi.os` and
-`.chezmoi.arch` to generate machine-specific values (e.g. Cargo `target`, CPU
-`jobs`) at apply time.
+## Secrets
+
+- Encrypted files use age (`chezmoi add --encrypt`), decrypted with
+  `~/.config/chezmoi/key.txt`. Never edit `*.age` files by hand.
+- Private SSH keys, tokens, and the Bedrock ARNs are never committed. The ARNs
+  live in the machine-local `~/.config/chezmoi/chezmoi.toml`.
