@@ -1,6 +1,10 @@
 # Work tools for the "poste" profile (see .chezmoiignore).
 # Plain TOML, not a chezmoi template: {{ version }} below is mise syntax.
 
+[settings]
+# The Red Hat mirror publishes no release dates: the age check cannot apply to oc.
+minimum_release_age_excludes = ["oc"]
+
 [tools]
 # ── Shell Utilities ──────────────────────────────────────────────────
 "cargo:kcli" = "0.1.0" # Fast and simple Kafka client
@@ -10,16 +14,10 @@
 
 # OpenShift CLI (Go), downloaded from the Red Hat mirror.
 [tools.oc]
-version = "5.0.0"
+version = "5.0.1"
 bin = "oc"
 version_list_url = "https://mirror.openshift.com/pub/openshift-v4/clients/ocp/"
 version_regex = 'href="(\d+\.\d+\.\d+)/"'
 version_expr = "sortVersions(versions)"
 checksum_url = "https://mirror.openshift.com/pub/openshift-v4/clients/ocp/{{ version }}/sha256sum.txt"
-
-[tools.oc.platforms]
-linux-arm64 = { url = "https://mirror.openshift.com/pub/openshift-v4/clients/ocp/{{ version }}/openshift-client-linux-arm64-{{ version }}.tar.gz" }
-linux-x64   = { url = "https://mirror.openshift.com/pub/openshift-v4/clients/ocp/{{ version }}/openshift-client-linux-{{ version }}.tar.gz" }
-macos-arm64 = { url = "https://mirror.openshift.com/pub/openshift-v4/clients/ocp/{{ version }}/openshift-client-mac-arm64-{{ version }}.tar.gz" }
-macos-x64   = { url = "https://mirror.openshift.com/pub/openshift-v4/clients/ocp/{{ version }}/openshift-client-mac-{{ version }}.tar.gz" }
-windows-x64 = { url = "https://mirror.openshift.com/pub/openshift-v4/clients/ocp/{{ version }}/openshift-client-windows-{{ version }}.zip" }
+platforms = { linux-arm64 = { url = "https://mirror.openshift.com/pub/openshift-v4/clients/ocp/{{ version }}/openshift-client-linux-arm64-{{ version }}.tar.gz" }, linux-x64 = { url = "https://mirror.openshift.com/pub/openshift-v4/clients/ocp/{{ version }}/openshift-client-linux-{{ version }}.tar.gz" }, macos-arm64 = { url = "https://mirror.openshift.com/pub/openshift-v4/clients/ocp/{{ version }}/openshift-client-mac-arm64-{{ version }}.tar.gz" }, macos-x64 = { url = "https://mirror.openshift.com/pub/openshift-v4/clients/ocp/{{ version }}/openshift-client-mac-{{ version }}.tar.gz" }, windows-x64 = { url = "https://mirror.openshift.com/pub/openshift-v4/clients/ocp/{{ version }}/openshift-client-windows-{{ version }}.zip" } }

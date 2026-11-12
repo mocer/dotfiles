@@ -7,11 +7,11 @@
 
 # ── Cargo Ecosystem & Code Quality ────────────────────────────────────────
 "github:EmbarkStudios/cargo-about" = "0.9.3"                  # Generates third-party license attribution from Cargo metadata.
-"aqua:rustsec/rustsec/cargo-audit" = "0.22.2"                 # Audits Cargo.lock for security vulnerabilities
+"aqua:rustsec/rustsec/cargo-audit" = "0.23.0"                 # Audits Cargo.lock for security vulnerabilities
 cargo-deny = "0.20.2"                                         # License and dependency auditor
 "github:bnjbvr/cargo-machete" = "0.9.2"                       # Detects unused dependencies in Cargo projects
-"aqua:nextest-rs/nextest/cargo-nextest" = "0.9.150"           # Next-generation test runner for Rust
-"github:xd009642/tarpaulin" = "0.37.5"                        # Code coverage tool
+"aqua:nextest-rs/nextest/cargo-nextest" = "0.9.151"           # Next-generation test runner for Rust
+"github:xd009642/tarpaulin" = "0.37.6"                        # Code coverage tool
 "github:watchexec/cargo-watch" = "8.5.3"                      # Watches project files and runs cargo commands on change
 git-cliff = "2.14.2"                                          # Highly customizable changelog generator
 grex = "1.4.6"                                                # Generate regular expressions from user-provided test cases
@@ -21,9 +21,9 @@ hyperfine = "2.0.0"                                           # Command-line ben
 gh = "2.103.3" # Github CLI; GOLANG
 
 # ── Core Infrastructure & VCS ────────────────────────────────────────────
-"aqua:cargo-bins/cargo-binstall" = "1.26.2" # Required for fast binary installs (prebuilt)
+"aqua:cargo-bins/cargo-binstall" = "1.27.0" # Required for fast binary installs (prebuilt)
 just = "1.59.0"                             # Modern task runner and command organizer
-jj = "0.46.0"                               # Next-generation Git-compatible VCS with operation log and safety features
+jj = "0.47.1"                               # Next-generation Git-compatible VCS with operation log and safety features
 sccache = "0.19.0"                          # Compiler cache optimization
 
 # ── Runtimes, Shells & Editors ────────────────────────────────────────────
@@ -33,24 +33,24 @@ carapace = "1.8.2"                     # External completions for Nushell
 deno = "2.9.8"                         # Secure runtime for JavaScript, TypeScript, and JSX
 helix = "25.07.1"                      # Post-modern modal text editor with built-in LSP
 usql = "0.21.6"                        # Universal command-line interface for SQL databases (Postgres, MySQL, SQLite, etc.); GOLANG
-uv = "0.13.6"                          # Python package manager
-yq = "4.54.1"
+uv = "0.13.7"                          # Python package manager
+yq = "4.54.3"
 
 # ── Shell Productivity and Utilities Tools ────────────────────────────────
-atuin = "18.24.4"                                           # SQLite-backed shell history sync and search
+atuin = "18.24.6"                                           # SQLite-backed shell history sync and search
 bat = "0.26.1"                                              # Cat clone with syntax highlighting
 bottom = "0.15.0"                                           # Cross-platform graphical process/system monitor (btm)
-fd = "10.5.0"                                               # File discovery (fd-find)
+fd = "10.5.2"                                               # File discovery (fd-find)
 jaq = "3.1.2"                                               # jq alternative with built-in support for YAML, CBOR, TOML, XML, and CSV/TSV
 "github:Feel-ix-343/markdown-oxide" = "0.25.12"             # Markdown LSP
 "aqua:ouch-org/ouch" = "0.8.3"                              # Painless compression and decompression for any format
 "github:MilesCranmer/rip2" = "0.9.7"                        # A safer, rust-based rm
 ripgrep = "15.2.0"                                          # Fast line-oriented search tool (rg)
-sd = "1.0.0"                                                # Intuitive find and replace (sed alternative)
+sd = "1.1.0"                                                # Intuitive find and replace (sed alternative)
 skim = "5.9.0"                                              # Fuzzy finder written in Rust (sk)
 starship = "1.27.0"                                         # Minimal, blazing-fast, and infinitely customizable shell prompt
 taplo = "0.10.0"                                            # Feature-rich TOML toolkit, linter, and formatter
-usage = { version = "7.1.5", workflow = "publish-cli.yml" } # Usage is a spec and CLI for defining CLI tools
+usage = { version = "7.3.0", workflow = "publish-cli.yml" } # Usage is a spec and CLI for defining CLI tools
 xh = "0.26.3"                                               # Fast and user-friendly HTTP client
 zoxide = "0.10.0"                                           # Smart cd command (z)
 
