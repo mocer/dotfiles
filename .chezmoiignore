@@ -26,6 +26,12 @@ AppData
 {{ if eq .chezmoi.os "darwin" -}}
 .config/nushell
 {{ end -}}
+{{ if ne .chezmoi.os "darwin" -}}
+.zprofile
+{{ end -}}
+{{ if ne .chezmoi.os "linux" -}}
+.profile
+{{ end -}}
 {{ if eq .chezmoi.os "windows" -}}
 .config/nushell
 .config/alacritty

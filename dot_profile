@@ -1,0 +1,2 @@
+# Managed by chezmoi: PATH for GUI applications started from the login session.
+export PATH="$HOME/.local/share/mise/shims:$HOME/.local/bin:$HOME/.cargo/bin:$PATH"
