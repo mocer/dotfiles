@@ -44,7 +44,10 @@ fd = "10.5.2"                                               # File discovery (fd
 jaq = "3.1.2"                                               # jq alternative with built-in support for YAML, CBOR, TOML, XML, and CSV/TSV
 "github:Feel-ix-343/markdown-oxide" = "0.25.12"             # Markdown LSP
 "aqua:ouch-org/ouch" = "0.8.3"                              # Painless compression and decompression for any format
-"github:MilesCranmer/rip2" = "0.9.7"                        # A safer, rust-based rm
+"github:MilesCranmer/rip2" = "0.9.7"                        # A safer, rust-based alternative to the Unix `rm` command
+ruff = "0.17.4"                                             # Python linter
+ty = "0.0.101"                                              # Python type checker
+"github:docker/docker-language-server" = "0.20.1"           # Dockerfile LSP
 ripgrep = "15.2.0"                                          # Fast line-oriented search tool (rg)
 sd = "1.1.0"                                                # Intuitive find and replace (sed alternative)
 skim = "5.9.0"                                              # Fuzzy finder written in Rust (sk)
@@ -59,8 +62,4 @@ sops = "3.13.3"              # Edit and manage SOPS-encrypted secret files
 "aqua:str4d/rage" = "0.12.1" # Modern and secure file encryption tool manage age-compatible identities
 
 #Lang
-python = "3.15.2"                                 #Python interpreter
-"cargo:just-lsp" = "latest"
-ruff = "latest"
-ty = "latest"
-"github:docker/docker-language-server" = "latest"
+python = "3.15.2" #Python interpreter

@@ -11,3 +11,4 @@
 "cargo:tokei" = "15.0.0"         # Blazing fast code statistics; GitHub releases have no assets
 "cargo:eza" = "0.23.5"           # Modern replacement for ls; no macOS release binary
 "cargo:ghr" = "0.4.5"            # Parallel GitHub repository manager; releases are all marked pre-release, which mise skips
+"cargo:just-lsp" = "0.11.1"      #Just LSP
