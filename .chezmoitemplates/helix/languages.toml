@@ -1,34 +1,59 @@
 {{- $nuPaths := includeTemplate "nu-paths" . | fromJson -}}
-# =============================================================================
-# NOTE: Helix does NOT support standalone linters. Linting must be handled
-#       through the Language Server Protocol (LSP) for each language.
-#       Formatters, however, can be configured independently.
-# =============================================================================
+# Helix language configuration.
+# Managed by chezmoi: edit .chezmoitemplates/helix/languages.toml.
+#
+# Every language server and formatter is installed by mise (rust-analyzer by
+# rustup). Helix runs linters only through language servers; formatters run
+# on save when auto-format is enabled. Servers already defined by Helix
+# (ruff, ty, just-lsp, taplo, markdown-oxide) are not redeclared.
 
-#****************************
-#*** Fish Shell formatter ***
-#****************************
+# ── Language servers ──────────────────────────────────────────────────
+
+[language-server.rust-analyzer.config]
+check.command = "clippy"
+cargo.targetDir = true # same as Zed: no lock contention with `cargo build`
+
+[language-server.rust-analyzer.environment]
+SQLX_OFFLINE = "true"
+
+[language-server.docker-language-server]
+command = "docker-language-server"
+args = ["start", "--stdio"]
+
+[language-server.nu-lsp]
+command = {{ $nuPaths.nu | toJson }}
+args = ["--config", {{ $nuPaths.lsp | toJson }}, "--lsp"]
+
+# ── Languages ─────────────────────────────────────────────────────────
+
 [[language]]
-name = "fish"
-formatter = { command = "fish_indent" }
+name = "rust"
 auto-format = true
 
-#**********************
-#*** JSON formatter ***
-#**********************
 [[language]]
-name = "json"
+name = "python"
+language-servers = ["ty", "ruff"]
+formatter = { command = "ruff", args = ["format", "-"] }
 auto-format = true
-formatter = { command = "deno", args = ["fmt", "-", "--ext", "json"] }
-language-servers = ["json-lsp"]
 
-[language-server.json-lsp]
-command = "json-lsp"
-args = ["--stdio"]
+[[language]]
+name = "dockerfile"
+language-servers = ["docker-language-server"]
 
-#****************
-#*** Markdown ***
-#****************
+[[language]]
+name = "docker-compose"
+language-servers = ["docker-language-server"]
+auto-format = true
+
+[[language]]
+name = "just"
+auto-format = true # formatted by just-lsp
+
+[[language]]
+name = "toml"
+formatter = { command = "taplo", args = ["fmt", "-"] }
+auto-format = true
+
 [[language]]
 name = "markdown"
 language-servers = ["markdown-oxide"]
@@ -36,51 +61,28 @@ formatter = { command = "deno", args = ["fmt", "-", "--ext", "md"] }
 soft-wrap.enable = false
 auto-format = true
 
-[language-server.markdown-oxide]
-command = "markdown-oxide"
-
-#*************************
-#*** Rust LSP + Debug ***
-#*************************
+# chezmoi templates: Go template highlighting only. No language server
+# (gopls needs the Go toolchain) and no formatter (mixed TOML/JSON/Nushell).
 [[language]]
-name = "rust"
-auto-format = true
-formatter = { command = "rustfmt" }
+name = "gotmpl"
+file-types = ["gotmpl", "tmpl", { glob = ".chezmoitemplates/**" }]
+language-servers = []
+auto-format = false
 
-[language-server.rust-analyzer.config]
-command = "clippy"
-
-[language-server.rust-analyzer.environment]
-# This is the block to set environment variables
-SQLX_OFFLINE = "true"
-
-# Definizione del server
-[language-server.taplo]
-command = "taplo"
-args = ["lsp", "stdio"]
-
-#**********************
-#*** Toml formatter ***
-#**********************
 [[language]]
-name = "toml"
-formatter = { command = "taplo", args = ["fmt", "-"] }
+name = "json"
+language-servers = []
+formatter = { command = "deno", args = ["fmt", "-", "--ext", "json"] }
 auto-format = true
-language-servers = ["taplo"]
 
-#**********************
-#*** YAML/YML formatter ***
-#**********************
 [[language]]
 name = "yaml"
-auto-format = true
+language-servers = []
 formatter = { command = "deno", args = ["fmt", "-", "--ext", "yaml"] }
-language-servers = ["yaml-lsp"]
+auto-format = true
 
-[language-server.yaml-lsp]
-command = "yaml-lsp"
-args = ["--stdio"]
-
-[language-server.nu-lsp]
-command = {{ $nuPaths.nu | toJson }}
-args = ["--config", {{ $nuPaths.lsp | toJson }}, "--lsp"]
+# Removed with Fish (Phase 12).
+[[language]]
+name = "fish"
+formatter = { command = "fish_indent" }
+auto-format = true
