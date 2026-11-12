@@ -1,0 +1,43 @@
+{{ if eq .chezmoi.os "windows" -}}
+# Install every tool declared in the mise configuration, in two passes (Windows).
+# See run_onchange_after_00-mise-install.sh.tmpl. Re-runs when the mise
+# configuration changes:
+#   mise config  {{ template "mise-config-hash" . }}
+$ErrorActionPreference = "Stop"
+
+# Windows GUI applications (Zed, Alacritty) only see the registry PATH of the
+# user. Add the mise shims and ~/.local/bin there, once, in front of the rest.
+$wanted = @(
+    (Join-Path $env:LOCALAPPDATA "mise\shims"),
+    (Join-Path $env:USERPROFILE ".local\bin")
+)
+$userPath = [Environment]::GetEnvironmentVariable("Path", "User")
+$entries = if ($userPath) { @($userPath -split ";" | Where-Object { $_ }) } else { @() }
+$missing = @($wanted | Where-Object { $entries -notcontains $_ })
+if ($missing.Count -gt 0) {
+    $newPath = (($missing + $entries) -join ";")
+    [Environment]::SetEnvironmentVariable("Path", $newPath, "User")
+    Write-Host "Added to the user PATH: $($missing -join ', ')"
+}
+# Same directories for this process, so the commands below find mise.
+foreach ($dir in $wanted) {
+    if (($env:Path -split ";") -notcontains $dir) { $env:Path = "$dir;$env:Path" }
+}
+
+if (-not (Get-Command mise -ErrorAction SilentlyContinue)) {
+    throw "mise not found (PATH or ~/.local/bin/mise.exe)."
+}
+
+# Pass 1 (blocking): Nushell and cargo-binstall. Failure stops chezmoi.
+mise install aqua:nushell/nushell aqua:cargo-bins/cargo-binstall
+if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+# Pass 2 (non-blocking): everything else. A failure only warns.
+mise install
+if ($LASTEXITCODE -ne 0) {
+    Write-Warning "mise install did not finish. Tools still missing:"
+    mise ls --missing
+    Write-Warning "Retry with 'mise install'; 'just doctor' reports what is missing."
+}
+exit 0
+{{ end -}}

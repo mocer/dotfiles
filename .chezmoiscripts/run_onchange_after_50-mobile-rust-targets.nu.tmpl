@@ -1,0 +1,12 @@
+{{ if has "mobile" .profiles -}}
+{{ template "nu-shebang" . }}
+# Rust cross-compilation targets for the "mobile" profile.
+# iOS targets are only meaningful on macOS (Xcode toolchain).
+use std/util "path add"
+
+path add ($nu.home-dir | path join ".cargo" "bin")
+
+let android = ["aarch64-linux-android" "armv7-linux-androideabi"]
+let ios = if $nu.os-info.name == "macos" { ["aarch64-apple-ios" "aarch64-apple-ios-sim"] } else { [] }
+^rustup target add ...($android ++ $ios)
+{{ end -}}

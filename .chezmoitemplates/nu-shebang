@@ -1,0 +1,9 @@
+{{- /*
+  First line of every Nushell chezmoi script.
+  Unix: absolute path of the mise shim. A shim is a link to the mise binary,
+  so it works before any shell activation and without mise on PATH.
+  Windows: empty; [interpreters.nu] in chezmoi.toml selects the interpreter.
+*/ -}}
+{{- if ne .chezmoi.os "windows" -}}
+#!{{ joinPath .chezmoi.homeDir ".local" "share" "mise" "shims" "nu" }}
+{{- end -}}

@@ -1,0 +1,29 @@
+{{ if ne .chezmoi.os "windows" -}}
+#!/usr/bin/env bash
+# Install every tool declared in the mise configuration, in two passes.
+#
+# Bootstrap step: it must not depend on Nushell, which mise itself installs.
+# It is the only script kept in two variants (bash/PowerShell); every later
+# script is Nushell. Re-runs when the mise configuration changes:
+#   mise config  {{ template "mise-config-hash" . }}
+set -euo pipefail
+
+mise_bin="$(command -v mise || printf '%s' "${HOME}/.local/bin/mise")"
+if [[ ! -x "${mise_bin}" ]]; then
+    printf 'ERROR: mise not found (PATH or ~/.local/bin/mise).\n' >&2
+    exit 1
+fi
+
+# Pass 1 (blocking): Nushell and cargo-binstall. Every later script needs nu,
+# and cargo-binstall must exist before any cargo: tool. Failure stops chezmoi.
+# The identifiers must match the keys in dot_config/mise/config.toml.
+"${mise_bin}" install aqua:nushell/nushell aqua:cargo-bins/cargo-binstall
+
+# Pass 2 (non-blocking): everything else, including cargo tools and active
+# profiles. A failure only warns, so links and Nushell init still run.
+if ! "${mise_bin}" install; then
+    printf 'WARNING: mise install did not finish. Tools still missing:\n' >&2
+    "${mise_bin}" ls --missing >&2 || true
+    printf 'Retry with `mise install`; `just doctor` reports what is missing.\n' >&2
+fi
+{{ end -}}

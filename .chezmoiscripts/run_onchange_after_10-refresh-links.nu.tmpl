@@ -1,0 +1,6 @@
+{{ template "nu-shebang" . }}
+# Refresh the stable ~/.local/bin links used by GUI applications and Cargo.
+# Re-runs when tool versions or the script change:
+#   mise config  {{ template "mise-config-hash" . }}
+#   script       {{ include "scripts/refresh-links.nu" | sha256sum }}
+^$nu.current-exe {{ joinPath .chezmoi.sourceDir "scripts" "refresh-links.nu" | toJson }}
