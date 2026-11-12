@@ -47,12 +47,15 @@ mise installer adds it to the user `Path`; the apply scripts also add it.
 
 ### 3. FiraCode Nerd Font
 
-- **macOS:** `brew install --cask font-fira-code-nerd-font`
-- **Linux:** download `FiraCode.zip` from the
-  [Nerd Fonts releases](https://github.com/ryanoasis/nerd-fonts/releases),
-  extract into `~/.local/share/fonts`, run `fc-cache -f`.
-- **Windows:** download the same `FiraCode.zip`, select the `.ttf` files,
-  right-click, "Install for all users" or "Install".
+Download `FiraCode.zip` from the
+[Nerd Fonts releases](https://github.com/ryanoasis/nerd-fonts/releases) and
+extract it. Then:
+
+- **macOS:** open the `.ttf` files with Font Book and click "Install Font", or
+  copy them to `~/Library/Fonts`.
+- **Linux:** copy the `.ttf` files to `~/.local/share/fonts`, then run
+  `fc-cache -f`.
+- **Windows:** select the `.ttf` files, right-click, "Install".
 
 ### 4. Rust editor component
 
