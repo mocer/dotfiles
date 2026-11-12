@@ -35,8 +35,9 @@ def main [version: string] {
         error make {msg: $"Nushell stays at ($previous)"}
     }
 
+    # The run_onchange scripts regenerate the vendor autoload: the mise config hash changed.
     ^chezmoi re-add ($nu.home-dir | path join ".config" "mise")
-    ^$nu.current-exe ($SCRIPTS | path join "nushell-init.nu")
+    ^chezmoi apply
     print $"\nNushell is now ($version). Restart open shells."
 }
 
