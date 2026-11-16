@@ -6,11 +6,11 @@
 # Rust itself is installed by rustup, not by mise (cargo: only needs `cargo` on PATH).
 
 # ── Cargo Ecosystem & Code Quality ────────────────────────────────────────
-"github:EmbarkStudios/cargo-about" = "0.9.3"        # Generates third-party license attribution from Cargo metadata.
-"aqua:rustsec/rustsec/cargo-audit" = "0.23.0"       # Audits Cargo.lock for security vulnerabilities
-cargo-deny = "0.20.2"                               # License and dependency auditor
-"github:bnjbvr/cargo-machete" = "0.9.2"             # Detects unused dependencies in Cargo projects
-"aqua:nextest-rs/nextest/cargo-nextest" = "0.9.151" # Next-generation test runner for Rust
+"github:EmbarkStudios/cargo-about" = "0.9.3"  # Generates third-party license attribution from Cargo metadata.
+"aqua:rustsec/rustsec/cargo-audit" = "0.23.0" # Audits Cargo.lock for security vulnerabilities
+cargo-deny = "0.20.2"                         # License and dependency auditor
+#"github:bnjbvr/cargo-machete" = "0.9.2"             # Detects unused dependencies in Cargo projects
+"aqua:nextest-rs/nextest/cargo-nextest" = "0.9.152" # Next-generation test runner for Rust
 "github:xd009642/tarpaulin" = "0.37.6"              # Code coverage tool
 "github:watchexec/cargo-watch" = "8.5.3"            # Watches project files and runs cargo commands on change
 git-cliff = "2.14.2"                                # Highly customizable changelog generator
@@ -18,7 +18,7 @@ grex = "1.4.6"                                      # Generate regular expressio
 hyperfine = "2.0.0"                                 # Command-line benchmarking tool
 
 # ── Cloud & Docker Services CLI  ──────────────────────────────────────
-gh = "2.103.3" # Github CLI; GOLANG
+gh = "2.104.0" # Github CLI; GOLANG
 
 # ── Core Infrastructure & VCS ────────────────────────────────────────────
 "aqua:cargo-bins/cargo-binstall" = "1.27.0" # Required for fast binary installs (prebuilt)
@@ -33,11 +33,11 @@ carapace = "1.8.2"                                                              
 deno = "2.9.8"                                                                                                                               # Secure runtime for JavaScript, TypeScript, and JSX
 helix = { version = "25.07.1", postinstall = '[ "$(uname)" = Darwin ] && xattr -dr com.apple.quarantine "$MISE_TOOL_INSTALL_PATH" || true' } # Post-modern modal text editor with built-in LSP
 usql = "0.21.6"                                                                                                                              # Universal command-line interface for SQL databases (Postgres, MySQL, SQLite, etc.); GOLANG
-uv = "0.13.7"                                                                                                                                # Python package manager
+uv = "0.13.8"                                                                                                                                # Python package manager
 yq = "4.54.3"
 
 # ── Shell Productivity and Utilities Tools ────────────────────────────────
-atuin = "18.24.6"                                           # SQLite-backed shell history sync and search
+atuin = "18.24.8"                                           # SQLite-backed shell history sync and search
 bat = "0.26.1"                                              # Cat clone with syntax highlighting
 bottom = "0.15.0"                                           # Cross-platform graphical process/system monitor (btm)
 fd = "10.5.2"                                               # File discovery (fd-find)
@@ -45,8 +45,8 @@ jaq = "3.1.2"                                               # jq alternative wit
 "github:Feel-ix-343/markdown-oxide" = "0.25.12"             # Markdown LSP
 "aqua:ouch-org/ouch" = "0.8.3"                              # Painless compression and decompression for any format
 "github:MilesCranmer/rip2" = "0.9.7"                        # A safer, rust-based alternative to the Unix `rm` command
-ruff = "0.17.4"                                             # Python linter
-ty = "0.0.101"                                              # Python type checker
+ruff = "0.17.5"                                             # Python linter
+ty = "0.0.104"                                              # Python type checker
 "github:docker/docker-language-server" = "0.20.1"           # Dockerfile LSP
 ripgrep = "15.2.0"                                          # Fast line-oriented search tool (rg)
 sd = "1.1.0"                                                # Intuitive find and replace (sed alternative)

@@ -14,7 +14,7 @@ minimum_release_age_excludes = ["oc"]
 
 # OpenShift CLI (Go), downloaded from the Red Hat mirror.
 [tools.oc]
-version = "5.0.1"
+version = "5.0.2"
 bin = "oc"
 version_list_url = "https://mirror.openshift.com/pub/openshift-v4/clients/ocp/"
 version_regex = 'href="(\d+\.\d+\.\d+)/"'
