@@ -1,0 +1,6 @@
+{{ template "nu-shebang" . }}
+# Regenerate the Nushell vendor autoload files (mise, starship, zoxide, atuin, carapace).
+# Re-runs when tool versions or the generator change:
+#   mise config  {{ template "mise-config-hash" . }}
+#   generator    {{ include "scripts/nushell-init.nu" | sha256sum }}
+^$nu.current-exe {{ joinPath .chezmoi.sourceDir "scripts" "nushell-init.nu" | toJson }}

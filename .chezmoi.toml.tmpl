@@ -17,6 +17,15 @@ useBuiltin = true
 identity   = {{ joinPath .chezmoi.homeDir ".config" "chezmoi" "key.txt" | quote }}
 recipient  = "age1r9vrlad9xmwef8djxchgrpmvwugmvz56znsspfrhwr38d9c9av9qpgx9kc"
 
+{{- if eq .chezmoi.os "windows" }}
+
+# Windows has no shebang support: run Nushell scripts through mise.
+# Unix scripts use the shebang from .chezmoitemplates/nu-shebang.
+[interpreters.nu]
+command = "mise"
+args    = ["exec", "--", "nu"]
+{{- end }}
+
 [data]
 # Overrides of .chezmoidata defaults for this machine only.
 # cargo_jobs = 8

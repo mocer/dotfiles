@@ -1,0 +1,88 @@
+{{- $nuPaths := includeTemplate "nu-paths" . | fromJson -}}
+# Helix language configuration.
+# Managed by chezmoi: edit .chezmoitemplates/helix/languages.toml.
+#
+# Every language server and formatter is installed by mise (rust-analyzer by
+# rustup). Helix runs linters only through language servers; formatters run
+# on save when auto-format is enabled. Servers already defined by Helix
+# (ruff, ty, just-lsp, taplo, markdown-oxide) are not redeclared.
+
+# ── Language servers ──────────────────────────────────────────────────
+
+[language-server.rust-analyzer.config]
+check.command = "clippy"
+cargo.targetDir = true # same as Zed: no lock contention with `cargo build`
+
+[language-server.rust-analyzer.environment]
+SQLX_OFFLINE = "true"
+
+[language-server.docker-language-server]
+command = "docker-language-server"
+args = ["start", "--stdio"]
+
+[language-server.nu-lsp]
+command = {{ $nuPaths.nu | toJson }}
+args = ["--config", {{ $nuPaths.lsp | toJson }}, "--lsp"]
+
+# ── Languages ─────────────────────────────────────────────────────────
+
+[[language]]
+name = "rust"
+auto-format = true
+
+[[language]]
+name = "python"
+language-servers = ["ty", "ruff"]
+formatter = { command = "ruff", args = ["format", "-"] }
+auto-format = true
+
+[[language]]
+name = "dockerfile"
+language-servers = ["docker-language-server"]
+
+[[language]]
+name = "docker-compose"
+language-servers = ["docker-language-server"]
+auto-format = true
+
+[[language]]
+name = "just"
+auto-format = true # formatted by just-lsp
+
+[[language]]
+name = "toml"
+formatter = { command = "taplo", args = ["fmt", "-"] }
+auto-format = true
+
+[[language]]
+name = "markdown"
+language-servers = ["markdown-oxide"]
+formatter = { command = "deno", args = ["fmt", "-", "--ext", "md"] }
+soft-wrap.enable = false
+auto-format = true
+
+# chezmoi templates: Go template highlighting only. No language server
+# (gopls needs the Go toolchain) and no formatter (mixed TOML/JSON/Nushell).
+[[language]]
+name = "gotmpl"
+file-types = ["gotmpl", "tmpl", { glob = ".chezmoitemplates/**" }]
+language-servers = []
+auto-format = false
+
+[[language]]
+name = "json"
+language-servers = []
+formatter = { command = "deno", args = ["fmt", "-", "--ext", "json"] }
+auto-format = true
+
+[[language]]
+name = "yaml"
+language-servers = []
+formatter = { command = "deno", args = ["fmt", "-", "--ext", "yaml"] }
+auto-format = true
+
+# Removed with Fish (Phase 12).
+[[language]]
+name = "fish"
+formatter = { command = "fish_indent" }
+auto-format = true

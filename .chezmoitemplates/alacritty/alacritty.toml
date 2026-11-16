@@ -1,0 +1,51 @@
+{{- $p := includeTemplate "nu-paths" . | fromJson -}}
+# This file configures the native Alacritty application on macOS, Linux and Windows.
+#
+# Alacritty starts Nushell through its stable path (~/.local/bin/nu, nu.exe on
+# Windows), maintained by scripts/refresh-links.nu. Alacritty does not inherit
+# the environment activated by mise, so it must not use a versioned install path.
+# Color schemes are cloned by .chezmoiexternal.toml.tmpl.
+
+[env]
+TERM = "alacritty"
+COLORTERM = "truecolor"
+
+[general]
+import = [{{ joinPath $p.alacrittyDir "themes" "themes" "enfocado_dark.toml" | toJson }}]
+
+# Start sessions in the current user's home directory.
+working_directory = {{ .chezmoi.homeDir | toJson }}
+
+[terminal.shell]
+program = {{ $p.nu | toJson }}
+
+[font]
+size = 15.0
+
+[font.bold]
+family = "FiraCode Nerd Font"
+style = "Bold"
+
+[font.italic]
+family = "FiraCode Nerd Font"
+style = "Italic"
+
+[font.normal]
+family = "FiraCode Nerd Font"
+style = "Retina"
+
+[font.offset]
+x = 0
+y = -2
+
+[window]
+padding.x = 5
+padding.y = 5
+opacity = 0.9
+{{- if eq .chezmoi.os "darwin" }}
+
+# Apply macOS-specific native window effects only where they are supported.
+decorations = "Buttonless"
+blur = true
+{{- end }}
+

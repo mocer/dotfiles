@@ -1,0 +1,11 @@
+{{- /*
+  One sha256 over config.toml and every conf.d/*.toml of the mise configuration.
+  Embedded in run_onchange_ scripts so they re-run when any of them changes.
+  Reads the source directory, so it works on every machine, profile files included.
+*/ -}}
+{{- $mise := joinPath .chezmoi.sourceDir "dot_config" "mise" | replace "\\" "/" -}}
+{{- $all := include (printf "%s/config.toml" $mise) | sha256sum -}}
+{{- range glob (printf "%s/conf.d/*.toml" $mise) -}}
+{{-   $all = print $all (include . | sha256sum) -}}
+{{- end -}}
+{{- $all | sha256sum -}}
