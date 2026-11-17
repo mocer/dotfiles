@@ -20,7 +20,8 @@ tree works natively on **macOS, Linux, and Windows** (no WSL).
 
 ## Contents
 
-- [Before the first `chezmoi apply`](#before-the-first-chezmoi-apply)
+- [Install](#install)
+- [Not managed by chezmoi](#not-managed-by-chezmoi)
 - [Profiles](#profiles)
 - [Scripts and recipes](#scripts-and-recipes)
 - [What is managed](#what-is-managed)
@@ -30,96 +31,26 @@ tree works natively on **macOS, Linux, and Windows** (no WSL).
 - [Repository layout](#repository-layout)
 - [Secrets](#secrets)
 
-## Before the first `chezmoi apply`
+## Install
 
-The dotfiles never install or upgrade these prerequisites. Everything else,
-Nushell included, is installed by mise.
+Pick the guide for your OS. Each one is complete and linear, from a bare machine to the first `chezmoi apply`:
 
-### 1. Prerequisites
+- [Windows 11](docs/install-windows.md)
+- [macOS](docs/install-macos.md)
+- [Ubuntu 26.10](docs/install-ubuntu.md)
 
-| Prerequisite         | Notes                                                       |
-| -------------------- | ----------------------------------------------------------- |
-| Git                  |                                                             |
-| Rust ([rustup])      | on Windows, rustup requires the MSVC Build Tools            |
-| chezmoi              | step 2                                                      |
-| mise                 | step 2                                                      |
-| Zed, Alacritty       | [zed.dev](https://zed.dev), [alacritty.org](https://alacritty.org) |
-| FiraCode Nerd Font   | step 3                                                      |
-| age key              | step 5                                                      |
+The flow is the same everywhere: install Git and KeePassXC (plus the C compiler on macOS and Ubuntu, and `curl` on Ubuntu), enable the SSH Agent in KeePassXC, clone this repository over SSH into `~/Repos/github.com/<owner>/dotfiles`, run the OS bootstrap script from `scripts/` (it ends with `gh auth login`), then `chezmoi init --source <clone>` and `chezmoi apply`. For profile `poste`, the age key and the company Claude Code package come before `chezmoi init`.
 
-[rustup]: https://rustup.rs
+## Not managed by chezmoi
 
-On Windows, install the MSVC Build Tools (Visual Studio Build Tools, "Desktop
-development with C++") before running rustup.
+Set up by hand, never stored in this repository:
 
-### 2. mise and chezmoi in `~/.local/bin`
-
-mise as the standalone release binary, chezmoi next to it
-(`%USERPROFILE%\.local\bin` on Windows):
-
-```sh
-# macOS, Linux
-curl -fsSL https://mise.run | sh
-sh -c "$(curl -fsLS https://get.chezmoi.io/lb)" -- -b ~/.local/bin
-```
-
-```powershell
-# Windows (PowerShell)
-irm https://mise.run/powershell | iex
-iex "&{$(irm 'https://get.chezmoi.io/ps1')} -b '$HOME\.local\bin'"
-```
-
-Make sure `~/.local/bin` is on `PATH` in the current session. On Windows the
-mise installer adds it to the user `Path`; the apply scripts also add it.
-
-### 3. FiraCode Nerd Font
-
-Download `FiraCode.zip` from the
-[Nerd Fonts releases](https://github.com/ryanoasis/nerd-fonts/releases) and
-extract it. Then:
-
-- **macOS:** open the `.ttf` files with Font Book and click "Install Font", or
-  copy them to `~/Library/Fonts`.
-- **Linux:** copy the `.ttf` files to `~/.local/share/fonts`, then run
-  `fc-cache -f`.
-- **Windows:** select the `.ttf` files, right-click, "Install".
-
-### 4. Rust editor component
-
-```sh
-rustup component add rust-analyzer
-```
-
-rustup's default profile does not include it. Repeat for every new toolchain.
-
-### 5. age key (profile `poste`)
-
-Place the key at `~/.config/chezmoi/key.txt`. It is required to decrypt the
-`*.age` files.
-
-### 6. Apply
-
-- **New machine:** `chezmoi init --apply https://github.com/mocer/dotfiles`
-- **Existing machine, after the Nushell migration:** run `chezmoi init` once
-  (it adds the Windows interpreter for `.nu` scripts), then `chezmoi apply`.
-
-`chezmoi init` asks once for the [profiles](#profiles) of the machine and, with
-`poste`, for the Bedrock inference profile ARNs (empty to skip). Answers are
-stored in `~/.config/chezmoi/chezmoi.toml` and reused on every later `init`.
-
-### 7. Login shell
-
-Confirm the login shell is the OS default: zsh on macOS, bash on Linux,
-PowerShell on Windows. Nushell is never the login shell; Alacritty, Zed, and
-Helix start it explicitly. On macOS and Linux chezmoi manages a minimal login
-profile (`~/.zprofile`, `~/.profile`) that puts the mise shims, `~/.local/bin`,
-and `~/.cargo/bin` on `PATH` for GUI applications.
-
-### Not managed
-
-SSH keys and `~/.ssh/allowed_signers` are not in this repository. Git signs
-commits with SSH and expects `~/.ssh/id_ed25519_developer.pub` and
-`~/.ssh/allowed_signers` to exist.
+- **Private SSH keys.** They live only in KeePassXC (SSH Agent), never on disk. chezmoi manages `~/.ssh/config`, the public keys (`*.pub`) and `~/.ssh/allowed_signers`; Git signs commits with the SSH key the agent holds.
+- **KeePassXC and its settings:** the database, the SSH Agent integration, the per-entry key options.
+- **The age key** `~/.config/chezmoi/key.txt` (profile `poste`), saved from a KeePassXC attachment.
+- **`~/.config/chezmoi/chezmoi.toml`.** It is generated by `chezmoi init`, with the profiles and, for `poste`, the Bedrock ARNs from the KeePassXC entry notes. Never write it by hand or copy it between machines.
+- **The company Claude Code package** (profile `poste`): it installs the credential helper in `~/claude-code-with-bedrock/`. chezmoi manages the AWS and Claude settings that use it, not the helper itself.
+- **Git, KeePassXC and the applications** installed by the bootstrap scripts, and the Rust toolchain (rustup).
 
 ## Profiles
 
