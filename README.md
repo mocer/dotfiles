@@ -256,7 +256,7 @@ Zed rewrites its settings file when settings change from the UI: run
 ├── dot_gitconfig.tmpl, dot_zprofile, dot_profile
 ├── scripts/                    # Nushell maintenance scripts (not deployed)
 ├── justfile                    # maintenance recipes (not deployed)
-└── docs/                       # migration runbook (not deployed)
+└── docs/                       # install guides per OS (not deployed)
 ```
 
 `scripts/`, `justfile`, `docs/`, and `README.md` stay in the source directory
