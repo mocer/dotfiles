@@ -40,7 +40,6 @@ AppData
 .config/helix
 .config/gh
 .config/mpv
-.config/fish
 {{ end -}}
 
 # Repository-only files

@@ -155,9 +155,6 @@ Same path on every OS:
 [ghr]: https://github.com/siketyan/ghr
 [alacritty-theme]: https://github.com/alacritty/alacritty-theme
 
-Fish (`~/.config/fish`) is still deployed on macOS and Linux as a legacy
-configuration and will be removed.
-
 ## Tools
 
 Tools are pinned to explicit versions in `dot_config/mise/config.toml`
