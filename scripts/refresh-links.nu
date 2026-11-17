@@ -23,17 +23,29 @@ def main [...tools: string] {
     # mise itself lives here; chezmoi may start this from a non-activated environment.
     path add $bin_dir
 
+    # A tool mise cannot resolve (not installed yet) is reported and skipped: the
+    # others still get their link. The script then fails, so chezmoi runs it again
+    # on the next apply, once the tool is installed.
+    mut missing = []
     for tool in $tools {
-        let target = (resolve-tool $tool)
+        let target = (try { resolve-tool $tool } catch {|e| print -e $"warn  ($e.msg)"; null })
+        if $target == null {
+            $missing = ($missing | append $tool)
+            continue
+        }
         if $nu.os-info.name == "windows" {
             link-windows $tool $target $bin_dir
         } else {
             link-unix $tool $target $bin_dir
         }
     }
+    if ($missing | is-not-empty) {
+        error make {msg: $"no link for: ($missing | str join ', '). Run `mise install`, then `just refresh-links`."}
+    }
 }
 
-# Absolute path of the binary mise resolves for <tool>.
+# Absolute path of the binary mise resolves for <tool>. `mise which` never installs
+# anything: a missing tool is an error here, not a trigger for a mise install.
 def resolve-tool [tool: string]: nothing -> string {
     let resolved = (^mise which $tool | complete)
     let target = ($resolved.stdout | str trim)

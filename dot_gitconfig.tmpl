@@ -12,6 +12,11 @@
 # REQUIRED: Tell Git where your allowed_signers file is
 [gpg "ssh"]
 	allowedSignersFile = ~/.ssh/allowed_signers
+{{- if eq .chezmoi.os "windows" }}
+	# Windows OpenSSH, not the one bundled with Git for Windows: KeePassXC loads the keys
+	# into the ssh-agent service of Windows. Same reason for core.sshCommand below.
+	program = C:/Windows/System32/OpenSSH/ssh-keygen.exe
+{{- end }}
 
 # Enable automatic signing for every commit
 [commit]
@@ -20,3 +25,6 @@
 # Global gitignore for machine and user-specific artifacts
 [core]
 	excludesFile = ~/.config/git/ignore
+{{- if eq .chezmoi.os "windows" }}
+	sshCommand = C:/Windows/System32/OpenSSH/ssh.exe
+{{- end }}

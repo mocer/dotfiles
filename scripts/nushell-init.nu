@@ -3,6 +3,10 @@
 # Output: $nu.data-dir/vendor/autoload/<NN>-<tool>.nu. Nushell loads these
 # after config.nu and before the user autoload directory, in name order.
 #
+# mise comes last (90-): `mise activate` must run after every other PATH change, or
+# the mise paths are no longer first. The generated carapace file prepends its own
+# bin directory to PATH, so it must load before mise.
+#
 # Generated once, not at every shell start: no startup cost. The catch is
 # that some generators embed the absolute, versioned path of their binary
 # (starship does), so this must run again after every mise upgrade. The
@@ -15,12 +19,15 @@ use std/util "path add"
 
 const INTEGRATIONS = [
     [file              tool        args];
-    ["00-mise.nu"      "mise"      ["activate" "nu" "--quiet"]]
     ["10-starship.nu"  "starship"  ["init" "nu"]]
     ["20-zoxide.nu"    "zoxide"    ["init" "nushell"]]
     ["30-atuin.nu"     "atuin"     ["init" "nu"]]
     ["40-carapace.nu"  "carapace"  ["_carapace" "nushell"]]
+    ["90-mise.nu"      "mise"      ["activate" "nu" "--quiet"]]
 ]
+
+# Files of earlier versions of this list, removed so they do not load twice.
+const OBSOLETE = ["00-mise.nu"]
 
 def main [] {
     # chezmoi may start this from a non-activated environment (first bootstrap):
@@ -34,6 +41,11 @@ def main [] {
 
     let dir = ($nu.data-dir | path join "vendor" "autoload")
     mkdir $dir
+
+    for old in $OBSOLETE {
+        let stale = ($dir | path join $old)
+        if ($stale | path exists) { rm -f $stale; print $"removed obsolete ($stale)" }
+    }
 
     for i in $INTEGRATIONS {
         let target = ($dir | path join $i.file)

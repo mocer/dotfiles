@@ -14,10 +14,26 @@ if [[ ! -x "${mise_bin}" ]]; then
     exit 1
 fi
 
-# Pass 1 (blocking): Nushell and cargo-binstall. Every later script needs nu,
-# and cargo-binstall must exist before any cargo: tool. Failure stops chezmoi.
+# Pass 1 (blocking): Nushell, cargo-binstall, gh and sccache. Every later script
+# needs nu, and cargo-binstall must exist before any cargo: tool. gh and sccache are
+# needed before pass 2 (see below). Failure stops chezmoi.
 # The identifiers must match the keys in dot_config/mise/config.toml.
-"${mise_bin}" install aqua:nushell/nushell aqua:cargo-bins/cargo-binstall
+"${mise_bin}" install aqua:nushell/nushell aqua:cargo-bins/cargo-binstall gh sccache
+
+# Before pass 2, for this script process only (nothing is persisted):
+# - RUSTC_WRAPPER: the Cargo configuration points rustc-wrapper to ~/.local/bin/sccache,
+#   a link that 10-refresh-links creates later. On a new machine it does not exist
+#   yet, so cargo: tools would fail to compile.
+# - GITHUB_TOKEN: anonymous GitHub API requests are limited to 60 per hour, which a
+#   first install exceeds. Use the token of `gh auth login`, when there is one.
+if sccache_bin="$("${mise_bin}" which sccache 2>/dev/null)" && [[ -n "${sccache_bin}" ]]; then
+    export RUSTC_WRAPPER="${sccache_bin}"
+fi
+if gh_bin="$("${mise_bin}" which gh 2>/dev/null)" && [[ -n "${gh_bin}" ]]; then
+    if gh_token="$("${gh_bin}" auth token 2>/dev/null)" && [[ -n "${gh_token}" ]]; then
+        export GITHUB_TOKEN="${gh_token}"
+    fi
+fi
 
 # Pass 2 (non-blocking): everything else, including cargo tools and active
 # profiles. A failure only warns, so links and Nushell init still run.

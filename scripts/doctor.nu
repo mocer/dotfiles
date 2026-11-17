@@ -5,7 +5,7 @@
 #                    (used by scripts that run outside an interactive session).
 
 const LINKED_TOOLS = ["nu" "deno" "sccache"]
-const VENDOR_FILES = ["00-mise.nu" "10-starship.nu" "20-zoxide.nu" "30-atuin.nu" "40-carapace.nu"]
+const VENDOR_FILES = ["10-starship.nu" "20-zoxide.nu" "30-atuin.nu" "40-carapace.nu" "90-mise.nu"]
 const NU_TOOL = "aqua:nushell/nushell"
 
 def main [--skip-activation] {
