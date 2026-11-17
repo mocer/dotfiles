@@ -1,0 +1,23 @@
+# Managed by chezmoi. Private keys live in KeePassXC (SSH Agent);
+# IdentityFile points to the public key so ssh asks the agent for that key only.
+{{- if eq .chezmoi.os "darwin" }}
+
+# OrbStack: 'orb' SSH host for Linux machines (must stay before any Host block)
+Include ~/.orbstack/ssh/config
+{{- end }}
+
+# Developer - GitHub Public
+Host github.com
+    HostName github.com
+    User git
+    IdentityFile ~/.ssh/id_ed25519_developer.pub
+    IdentitiesOnly yes
+{{- if has "poste" .profiles }}
+
+# Work - Posteitaliane (GHE)
+Host posteitaliane.ghe.com
+    HostName posteitaliane.ghe.com
+    User posteitaliane
+    IdentityFile ~/.ssh/id_ed25519_posteitaliane.pub
+    IdentitiesOnly yes
+{{- end }}

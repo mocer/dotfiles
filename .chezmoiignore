@@ -9,6 +9,7 @@
 .aws/config
 claude-code-with-bedrock
 .claude/settings.json
+.ssh/id_ed25519_posteitaliane.pub
 {{ else if not $arns -}}
 .claude/settings.json
 {{ end -}}
