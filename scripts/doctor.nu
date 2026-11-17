@@ -16,8 +16,17 @@ def main [--skip-activation] {
     }
 
     if not $skip_activation {
-        let activated = (^mise doctor | complete | get stdout | str contains "activated: yes")
-        $results = ($results | append (check $activated "mise activated in this shell" "just nushell-init, then open a new shell"))
+        # `mise doctor --json` (documented flag) reports shell activation in its "activated" key.
+        # `mise doctor` exits 1 when it finds a problem but still prints the JSON.
+        # A mise version without the key is a warning, not a failure.
+        let doctor = (^mise doctor --json | complete)
+        let activated = (try { $doctor.stdout | from json | get activated? } catch { null })
+        let line = if $activated == null {
+            {ok: true, warn: true, label: "mise activated in this shell: cannot determine, key not present in this mise version", hint: ""}
+        } else {
+            check $activated "mise activated in this shell" "just nushell-init, then open a new shell"
+        }
+        $results = ($results | append $line)
     }
 
     let missing = (^mise ls --missing | complete | get stdout | str trim)
@@ -44,7 +53,9 @@ def main [--skip-activation] {
     $results = ($results | append (check ($nu.home-dir | path join ".config" "git" "ignore" | path exists) "global Git ignore"))
 
     for r in $results {
-        if $r.ok {
+        if ($r.warn? | default false) {
+            print $"warn  ($r.label)"
+        } else if $r.ok {
             print $"ok    ($r.label)"
         } else {
             let hint = if ($r.hint | is-empty) { "" } else { $"  -> ($r.hint)" }
