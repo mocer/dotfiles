@@ -80,9 +80,3 @@ name = "yaml"
 language-servers = []
 formatter = { command = "deno", args = ["fmt", "-", "--ext", "yaml"] }
 auto-format = true
-
-# Removed with Fish (Phase 12).
-[[language]]
-name = "fish"
-formatter = { command = "fish_indent" }
-auto-format = true

@@ -17,13 +17,24 @@ useBuiltin = true
 identity   = {{ joinPath .chezmoi.homeDir ".config" "chezmoi" "key.txt" | quote }}
 recipient  = "age1r9vrlad9xmwef8djxchgrpmvwugmvz56znsspfrhwr38d9c9av9qpgx9kc"
 
+# Commands chezmoi starts itself: `chezmoi cd` opens Nushell, `chezmoi edit` opens Helix.
+# Without them chezmoi falls back to the system shell and editor (cmd.exe, notepad.exe on Windows).
+[cd]
+command = "nu"
+
+[edit]
+command = "hx"
+
 {{- if eq .chezmoi.os "windows" }}
 
 # Windows has no shebang support: run Nushell scripts through mise.
 # Unix scripts use the shebang from .chezmoitemplates/nu-shebang.
+# Naming the tool matters: `mise exec` installs every missing tool of the
+# configuration first, unless tools are named (then only those). A cargo: tool that
+# fails to compile would otherwise stop every Nushell script before it starts.
 [interpreters.nu]
 command = "mise"
-args    = ["exec", "--", "nu"]
+args    = ["exec", "aqua:nushell/nushell", "--", "nu"]
 {{- end }}
 
 [data]

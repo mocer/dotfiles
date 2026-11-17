@@ -28,9 +28,29 @@ if (-not (Get-Command mise -ErrorAction SilentlyContinue)) {
     throw "mise not found (PATH or ~/.local/bin/mise.exe)."
 }
 
-# Pass 1 (blocking): Nushell and cargo-binstall. Failure stops chezmoi.
-mise install aqua:nushell/nushell aqua:cargo-bins/cargo-binstall
+# Pass 1 (blocking): Nushell, cargo-binstall, gh and sccache. Failure stops chezmoi.
+# gh and sccache are needed before pass 2 (see below).
+mise install aqua:nushell/nushell aqua:cargo-bins/cargo-binstall gh sccache
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+# Before pass 2, for this script process only (nothing is persisted):
+# - RUSTC_WRAPPER: the Cargo configuration points rustc-wrapper to
+#   ~/.local/bin/sccache.exe, a link that 10-refresh-links creates later. On a new
+#   machine it does not exist yet, so cargo: tools would fail to compile.
+# - GITHUB_TOKEN: anonymous GitHub API requests are limited to 60 per hour, which a
+#   first install exceeds. Use the token of `gh auth login`, when there is one.
+# Both lookups are optional: a failure must not stop the script. Under "Stop", Windows
+# PowerShell 5.1 throws as soon as a native command writes to stderr, even with 2>$null
+# (checked with `mise which` on a missing tool), hence "Continue" for these lines.
+$ErrorActionPreference = "Continue"
+$sccache = (mise which sccache 2>$null)
+if ($LASTEXITCODE -eq 0 -and $sccache) { $env:RUSTC_WRAPPER = "$sccache" }
+$gh = (mise which gh 2>$null)
+if ($LASTEXITCODE -eq 0 -and $gh) {
+    $token = (& "$gh" auth token 2>$null)
+    if ($LASTEXITCODE -eq 0 -and $token) { $env:GITHUB_TOKEN = "$token" }
+}
+$ErrorActionPreference = "Stop"
 
 # Pass 2 (non-blocking): everything else. A failure only warns.
 mise install

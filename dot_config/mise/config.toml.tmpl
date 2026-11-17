@@ -9,7 +9,6 @@
 "github:EmbarkStudios/cargo-about" = "0.9.3"  # Generates third-party license attribution from Cargo metadata.
 "aqua:rustsec/rustsec/cargo-audit" = "0.23.0" # Audits Cargo.lock for security vulnerabilities
 cargo-deny = "0.20.2"                         # License and dependency auditor
-#"github:bnjbvr/cargo-machete" = "0.9.2"             # Detects unused dependencies in Cargo projects
 "aqua:nextest-rs/nextest/cargo-nextest" = "0.9.152" # Next-generation test runner for Rust
 "github:xd009642/tarpaulin" = "0.37.6"              # Code coverage tool
 "github:watchexec/cargo-watch" = "8.5.3"            # Watches project files and runs cargo commands on change
@@ -29,9 +28,8 @@ sccache = "0.19.0"                          # Compiler cache optimization
 # ── Runtimes, Shells & Editors ────────────────────────────────────────────
 "aqua:nushell/nushell" = "0.117.0"                                                                                                           # Primary shell on macOS, Linux and Windows (prebuilt); held, see `just upgrade-nu`
 carapace = "1.8.2"                                                                                                                           # External completions for Nushell
-"aqua:fish-shell/fish-shell" = "4.9.3"                                                                                                       # Legacy shell, removed when Fish is retired (macOS, Linux)
 deno = "2.9.8"                                                                                                                               # Secure runtime for JavaScript, TypeScript, and JSX
-helix = { version = "25.07.1", postinstall = '[ "$(uname)" = Darwin ] && xattr -dr com.apple.quarantine "$MISE_TOOL_INSTALL_PATH" || true' } # Post-modern modal text editor with built-in LSP
+helix = { version = "25.07.1"{{ if eq .chezmoi.os "darwin" }}, postinstall = 'xattr -dr com.apple.quarantine "$MISE_TOOL_INSTALL_PATH" || true'{{ end }} } # Post-modern modal text editor with built-in LSP
 usql = "0.21.6"                                                                                                                              # Universal command-line interface for SQL databases (Postgres, MySQL, SQLite, etc.); GOLANG
 uv = "0.13.8"                                                                                                                                # Python package manager
 yq = "4.54.3"
