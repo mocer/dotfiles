@@ -78,7 +78,7 @@ cd "$HOME\Repos\github.com\<owner>\dotfiles"
 .\scripts\bootstrap-windows.ps1
 ```
 
-The script checks Git and KeePassXC, then installs the other applications with winget (Alacritty, Zed, mpv.net, yt-dlp, FFmpeg, GIMP, SumatraPDF), checks the `ssh-agent` service and `ssh-add -l`, installs the NVIDIA Control Panel (only with an NVIDIA GPU and its driver), the MSVC Build Tools, chezmoi, mise and rustup (with `rust-analyzer`) and adds `~/.local/bin` to the user `PATH`. UAC prompts appear for the steps that need elevation. It ends with `gh auth login`: follow the browser flow (SSH protocol; the key upload is skipped, your keys are already on GitHub).
+The script checks Git and KeePassXC, then installs the other applications with winget (Alacritty, Zed, mpv.net, yt-dlp, FFmpeg, GIMP, SumatraPDF, gsudo), checks the `ssh-agent` service and `ssh-add -l`, installs the NVIDIA Control Panel (only with an NVIDIA GPU and its driver), the MSVC Build Tools, chezmoi, mise and rustup (with `rust-analyzer`) pins two winget packages and adds `~/.local/bin` to the user `PATH`. The pins keep `winget upgrade --all` away from `Rustlang.Rustup` (rustup updates itself with `rustup update`) and `Microsoft.AppInstaller` (winget itself, which must not be upgraded in the middle of a run). UAC prompts appear for the steps that need elevation. It ends with `gh auth login`: follow the browser flow (SSH protocol; the key upload is skipped, your keys are already on GitHub).
 
 Every step checks first and skips what is already there, so you can run it again. Options: `-SkipBuildTools` (Visual Studio is already installed), `-SkipNvidia`. The NVIDIA driver itself is not installed: on AtlasOS install it with NVCleanstall first.
 
@@ -176,7 +176,9 @@ If the thread cannot authenticate, see the `poste` entries of the troubleshootin
 
 **Login shell.** Leave it as it is: PowerShell on Windows. Nushell is never the login shell; Alacritty, Zed and Helix start it explicitly.
 
-**Updates later:** `winget upgrade --all`, `rustup update`, `mise self-update`, `chezmoi upgrade`; for the tools managed by the repository use `system_upgrade` in Nushell.
+**Updates later:** run `system_upgrade` in Nushell. It runs `just upgrade`: mise, chezmoi, the mise tools, `rustup update`, `uv`, and finally `winget upgrade` for the applications, with one UAC prompt through gsudo. Close Zed before running it, otherwise its upgrade can fail.
+
+App Installer is pinned, so the upgrade skips it. The Microsoft Store updates it; if it does not, run `winget upgrade --id Microsoft.AppInstaller --exact` on its own, outside `system_upgrade`.
 
 ## Troubleshooting
 
@@ -190,6 +192,12 @@ If the thread cannot authenticate, see the `poste` entries of the troubleshootin
 - Run `ssh-add -l` in PowerShell, not in Git Bash.
 
 **A `cargo:` tool compiles for a long time.** Some tools of `conf.d/cargo.toml` have no Windows binaries, so `mise install` builds them from source with the MSVC Build Tools. That is expected and the first build can take many minutes. sccache caches the compilation, so reruns are fast. If the install is interrupted, run `mise install` again; a tool that fails only produces a warning, and `just doctor` lists what is missing.
+
+**The terminal closes during the winget step.** An application of the running terminal (Alacritty) was upgraded. Everything before that step already finished; reopen the terminal.
+
+**Exclude another package from upgrades.** `winget pin add --id <Id> --exact`. List the pins with `winget pin list`. A pin only excludes the package from `--all`; an explicit `winget upgrade --id <Id>` still works.
+
+**A program is not upgraded.** `system_upgrade` upgrades only what winget installed: it does not pass `--include-unknown`, on purpose, so software winget did not install is left alone.
 
 **`poste`: Claude Agent in Zed (or Claude Code) fails to authenticate.**
 - The company session expired. Run the helper once, the same command `awsAuthRefresh` runs, without printing its output: `& "$HOME\claude-code-with-bedrock\credential-process.exe" --profile claude-code | Out-Null`. Complete the sign-in it asks for, then start a new thread.

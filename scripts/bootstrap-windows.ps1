@@ -15,6 +15,7 @@
       5. chezmoi                 (official script, into ~/.local/bin)
       6. mise                    (official script, into ~/.local/bin)
       7. rustup + stable         (official rustup-init.exe; rust-analyzer component)
+      8. winget pins             (Rustup and App Installer, see $WingetPins)
     adds ~/.local/bin to the user PATH, and ends with `gh auth login` (SSH protocol).
 
     Run it as your NORMAL user, not "as Administrator": chezmoi, mise and
@@ -27,11 +28,14 @@
     Not installed here: the NVIDIA driver. AtlasOS recommends a stripped
     driver installed with NVCleanstall; do that first, then run this script.
 
-    Updates later (NOT handled by Windows Update):
-      winget upgrade --all     apps installed with winget
-      rustup update            Rust toolchains
-      mise self-update         mise itself; `mise upgrade` for its tools
-      chezmoi upgrade          chezmoi itself
+    Updates later (NOT handled by Windows Update): `just upgrade` (Nushell:
+    `system_upgrade`) runs, in order:
+      mise self-update, chezmoi upgrade, `mise upgrade` for the tools,
+      rustup update            Rust toolchains (Rustup is pinned in winget)
+      winget upgrade --all     apps installed with winget, last, with one UAC
+                               prompt through gsudo
+    App Installer (winget itself) is pinned too: the Microsoft Store updates it,
+    or `winget upgrade --id Microsoft.AppInstaller --exact` by hand.
     The NVIDIA Control Panel is a Store app: the Store updates it.
 
 .PARAMETER SkipBuildTools
@@ -66,6 +70,14 @@ $WingetApps = @(
     'yt-dlp.FFmpeg'              # FFmpeg build maintained for yt-dlp (merges audio/video)
     'GIMP.GIMP.3'                # GIMP 3 (GIMP.GIMP is a different package)
     'SumatraPDF.SumatraPDF'
+    'gerardog.gsudo'             # used by `just upgrade` to run winget upgrade with one UAC prompt
+)
+
+# Packages pinned so that `winget upgrade --all` never touches them. An explicit
+# `winget upgrade --id <Id>` still works.
+$WingetPins = @(
+    'Rustlang.Rustup'            # winget matches it, but it updates itself with `rustup update`
+    'Microsoft.AppInstaller'     # winget itself: upgrading it mid-run can fail or interrupt the run
 )
 
 # NVIDIA Control Panel: Microsoft Store product ID and its Appx package name.
@@ -311,6 +323,18 @@ Update-SessionPath
 rustup component add rust-analyzer
 Write-Ok 'rust-analyzer component present'
 
+# -- 8. winget pins -----------------------------------------------------------
+# After rustup: the Rustup pin needs the package to be known to winget.
+
+Write-Step 'winget pins'
+$pinned = Invoke-Native 'winget pin list' | Out-String
+foreach ($id in $WingetPins) {
+    if ($pinned -match [regex]::Escape($id)) { Write-Skip "$id already pinned"; continue }
+    # Not fatal: the package may not exist on another machine.
+    Invoke-Native "winget pin add --id $id --exact --accept-source-agreements" | Out-Null
+    if ($LASTEXITCODE -eq 0) { Write-Ok "$id pinned" } else { Write-Warn "could not pin $id" }
+}
+
 # -- PATH and summary ---------------------------------------------------------
 
 Write-Step 'PATH'
@@ -318,7 +342,7 @@ Add-UserPath $LocalBin
 Update-SessionPath
 
 Write-Step 'Summary'
-foreach ($t in 'git', 'alacritty', 'zed', 'yt-dlp', 'ffmpeg', 'chezmoi', 'mise', 'rustup', 'cargo') {
+foreach ($t in 'git', 'alacritty', 'zed', 'yt-dlp', 'ffmpeg', 'chezmoi', 'mise', 'rustup', 'cargo', 'gsudo') {
     $c = Get-Command $t -ErrorAction SilentlyContinue
     if ($c) { Write-Ok ('{0,-10} {1}' -f $t, $c.Source) } else { Write-Warn "$t not found in PATH" }
 }
@@ -350,7 +374,7 @@ if ($LASTEXITCODE -eq 0) {
 
 Write-Host @"
 
-Updates later: winget upgrade --all  (plus rustup update, mise self-update, chezmoi upgrade)
+Updates later: just upgrade / system_upgrade (mise, chezmoi, rustup, then winget upgrade --all through gsudo)
 
 Next steps (new terminal, so the updated PATH is loaded):
   5. Profile 'poste' only: save the key.txt attachment from KeePassXC to
