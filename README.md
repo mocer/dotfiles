@@ -163,8 +163,6 @@ Same path on every OS:
 
 Tools are pinned to explicit versions in `dot_config/mise/config.toml`
 (always applied), `conf.d/cargo.toml` (always applied), or a profile file.
-Exceptions still on `latest`: `just-lsp`, `ruff`, `ty`,
-`docker-language-server`.
 Backend policy: registry short name or `aqua:`/`github:` first; `cargo:` only
 for crates without release binaries for macOS, Linux, and Windows. Those live
 in `conf.d/cargo.toml` and are installed by cargo-binstall, or built from
